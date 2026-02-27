@@ -1,0 +1,301 @@
+
+
+// ============================================================================
+// COST MANAGEMENT ENTITIES
+// ============================================================================
+
+enum CostCategoryType {
+  LABOR
+  OVERHEAD
+  UTILITIES
+  RENT
+  MARKETING
+  MAINTENANCE
+  INSURANCE
+  LICENSES
+  SUPPLIES
+  OTHER
+}
+
+enum CostFrequency {
+  ONE_TIME
+  DAILY
+  WEEKLY
+  BI_WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
+}
+
+enum CostStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum EmployeeType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  TEMPORARY
+}
+
+enum PaymentFrequency {
+  HOURLY
+  DAILY
+  WEEKLY
+  BI_WEEKLY
+  MONTHLY
+}
+
+model CostCategory {
+  id              String           @id @default(cuid())
+  name            String
+  type            CostCategoryType @default(OTHER)
+  description     String?
+  color           String           @default("#6B7280")
+  icon            String?
+  isActive        Boolean          @default(true)
+  isRecurring     Boolean          @default(false)
+  defaultFrequency CostFrequency?
+  
+  restaurantId    String
+  restaurant      Restaurant       @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  entries         CostEntry[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([restaurantId])
+}
+
+model CostEntry {
+  id              String        @id @default(cuid())
+  amount          Decimal       @db.Decimal(10, 2)
+  date            DateTime      @db.Date
+  description     String?
+  reference       String?
+  vendor          String?
+  status          CostStatus    @default(PAID)
+  
+  frequency       CostFrequency?
+  isRecurring     Boolean       @default(false)
+  recurringStartDate DateTime?  @db.Date
+  recurringEndDate   DateTime?  @db.Date
+  parentEntryId   String?
+  
+  attachments     String[]      @default([])
+  metadata        Json?
+  
+  categoryId      String?
+  category        CostCategory? @relation(fields: [categoryId], references: [id])
+  
+  restaurantId    String
+  restaurant      Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  createdById     String?
+  createdBy       User?         @relation("CostEntryCreatedBy", fields: [createdById], references: [id])
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([restaurantId, date])
+  @@index([restaurantId, categoryId])
+}
+
+model Employee {
+  id              String           @id @default(cuid())
+  name            String
+  email           String?
+  phone           String?
+  position        String
+  department      String?
+  
+  employeeType    EmployeeType     @default(FULL_TIME)
+  paymentFrequency PaymentFrequency @default(MONTHLY)
+  
+  baseSalary      Decimal          @db.Decimal(10, 2)
+  hourlyRate      Decimal          @db.Decimal(10, 2) @default(0)
+  
+  hireDate        DateTime         @db.Date
+  terminationDate DateTime?        @db.Date
+  isActive        Boolean          @default(true)
+  
+  benefits        Json?
+  
+  restaurantId    String
+  restaurant      Restaurant       @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  laborEntries    LaborEntry[]
+  
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([restaurantId])
+}
+
+model LaborEntry {
+  id              String    @id @default(cuid())
+  
+  employeeId      String
+  employee        Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  payPeriodStart  DateTime  @db.Date
+  payPeriodEnd    DateTime  @db.Date
+  
+  regularHours    Decimal   @db.Decimal(10, 2) @default(0)
+  overtimeHours   Decimal   @db.Decimal(10, 2) @default(0)
+  
+  basePay         Decimal   @db.Decimal(10, 2)
+  overtimePay     Decimal   @db.Decimal(10, 2) @default(0)
+  bonus           Decimal   @db.Decimal(10, 2) @default(0)
+  tips            Decimal   @db.Decimal(10, 2) @default(0)
+  deductions      Decimal   @db.Decimal(10, 2) @default(0)
+  taxes           Decimal   @db.Decimal(10, 2) @default(0)
+  
+  netPay          Decimal   @db.Decimal(10, 2)
+  totalCost       Decimal   @db.Decimal(10, 2) // Employer cost
+  
+  notes           String?
+  isPaid          Boolean   @default(false)
+  paidDate        DateTime?
+  
+  restaurantId    String
+  restaurant      Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([restaurantId, payPeriodStart])
+  @@index([employeeId])
+}
+
+model OverheadSettings {
+  id              String    @id @default(cuid())
+  
+  monthlyRent         Decimal @db.Decimal(10, 2) @default(0)
+  monthlyUtilities    Decimal @db.Decimal(10, 2) @default(0)
+  monthlyInsurance    Decimal @db.Decimal(10, 2) @default(0)
+  monthlyLicenses     Decimal @db.Decimal(10, 2) @default(0)
+  monthlyMarketing    Decimal @db.Decimal(10, 2) @default(0)
+  monthlyMaintenance  Decimal @db.Decimal(10, 2) @default(0)
+  monthlySupplies     Decimal @db.Decimal(10, 2) @default(0)
+  monthlyOther        Decimal @db.Decimal(10, 2) @default(0)
+  
+  targetFoodCostPercentage  Decimal @db.Decimal(5, 2) @default(30)
+  targetLaborCostPercentage Decimal @db.Decimal(5, 2) @default(30)
+  targetProfitMargin        Decimal @db.Decimal(5, 2) @default(20)
+  
+  customOverheads     Json?
+  
+  restaurantId    String     @unique
+  restaurant      Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+}
+
+// ============================================================================
+// PRINTING ENTITIES
+// ============================================================================
+
+enum PrinterType {
+  THERMAL
+  NETWORK
+  USB
+  BLUETOOTH
+  CLOUD
+}
+
+enum PrinterPurpose {
+  RECEIPT
+  KITCHEN
+  BAR
+  BOTH
+}
+
+enum PrinterStatus {
+  ONLINE
+  OFFLINE
+  ERROR
+  PAPER_OUT
+}
+
+enum PrintJobStatus {
+  PENDING
+  PRINTING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum PrintJobType {
+  CUSTOMER_RECEIPT
+  KITCHEN_ORDER
+  BAR_ORDER
+  DAILY_REPORT
+  BILL
+  VOID_RECEIPT
+}
+
+model Printer {
+  id              String         @id @default(cuid())
+  name            String
+  type            PrinterType    @default(NETWORK)
+  purpose         PrinterPurpose @default(RECEIPT)
+  
+  ipAddress       String?
+  port            Int?
+  usbVendorId     String?
+  usbProductId    String?
+  macAddress      String?
+  
+  paperWidth      Int            @default(80)
+  charactersPerLine Int          @default(48)
+  
+  status          PrinterStatus  @default(OFFLINE)
+  isActive        Boolean        @default(true)
+  isDefault       Boolean        @default(false)
+  
+  settings        Json?
+  lastSeen        DateTime?
+  
+  restaurantId    String
+  restaurant      Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  printJobs       PrintJob[]
+  
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([restaurantId])
+}
+
+model PrintJob {
+  id              String         @id @default(cuid())
+  type            PrintJobType
+  status          PrintJobStatus @default(PENDING)
+  content         String         @db.Text
+  data            Json?
+  
+  priority        Int            @default(1)
+  retryCount      Int            @default(0)
+  maxRetries      Int            @default(3)
+  errorMessage    String?
+  
+  printerId       String?
+  printer         Printer?       @relation(fields: [printerId], references: [id])
+  
+  restaurantId    String
+  restaurant      Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  
+  orderId         String?
+  printedAt       DateTime?
+  
+  createdAt       DateTime       @default(now())
+
+  @@index([restaurantId, status])
+  @@index([printerId])
+}

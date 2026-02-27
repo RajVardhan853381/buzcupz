@@ -1,0 +1,604 @@
+
+> @restaurant/api@1.0.0 build
+> nest build
+
+[96mprisma/seed.ts[0m:[93m128[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType '{ width: number; height: number; status: "AVAILABLE"; floorPlanId: string; restaurantId: string; number: string; minCapacity: number; maxCapacity: number; positionX: number; positionY: number; shape: string; } | { ...; }' is not assignable to type '(Without<TableCreateInput, TableUncheckedCreateInput> & TableUncheckedCreateInput) | (Without<...> & TableCreateInput)'.
+  Type '{ width: number; height: number; status: "AVAILABLE"; floorPlanId: string; restaurantId: string; number: string; minCapacity: number; maxCapacity: number; positionX: number; positionY: number; shape: string; }' is not assignable to type '(Without<TableCreateInput, TableUncheckedCreateInput> & TableUncheckedCreateInput) | (Without<...> & TableCreateInput)'.
+    Type '{ width: number; height: number; status: "AVAILABLE"; floorPlanId: string; restaurantId: string; number: string; minCapacity: number; maxCapacity: number; positionX: number; positionY: number; shape: string; }' is not assignable to type 'Without<TableCreateInput, TableUncheckedCreateInput> & TableUncheckedCreateInput'.
+      Type '{ width: number; height: number; status: "AVAILABLE"; floorPlanId: string; restaurantId: string; number: string; minCapacity: number; maxCapacity: number; positionX: number; positionY: number; shape: string; }' is not assignable to type 'TableUncheckedCreateInput'.
+        Types of property 'shape' are incompatible.
+          Type 'string' is not assignable to type 'TableShape | undefined'.
+
+[7m128[0m             create: {
+[7m   [0m [91m            ~~~~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m18610[0m:[93m5[0m
+    [7m18610[0m     create: XOR<TableCreateInput, TableUncheckedCreateInput>
+    [7m     [0m [96m    ~~~~~~[0m
+    The expected type comes from property 'create' which is declared here on type '{ select?: TableSelect<DefaultArgs> | null | undefined; include?: TableInclude<DefaultArgs> | null | undefined; where: TableWhereUniqueInput; create: (Without<...> & TableUncheckedCreateInput) | (Without<...> & TableCreateInput); update: (Without<...> & TableUncheckedUpdateInput) | (Without<...> & TableUpdateInput); }'
+[96msrc/app.module.ts[0m:[93m54[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType '(config: ConfigService) => { throttlers: { name: string; ttl: number | ((context: ExecutionContext) => number | Promise<number>) | undefined; limit: number | ... 1 more ... | undefined; }[]; }' is not assignable to type '(...args: any[]) => ThrottlerModuleOptions | Promise<ThrottlerModuleOptions>'.
+  Type '{ throttlers: { name: string; ttl: number | ((context: ExecutionContext) => number | Promise<number>) | undefined; limit: number | ((context: ExecutionContext) => number | Promise<number>) | undefined; }[]; }' is not assignable to type 'ThrottlerModuleOptions | Promise<ThrottlerModuleOptions>'.
+    Type '{ throttlers: { name: string; ttl: number | ((context: ExecutionContext) => number | Promise<number>) | undefined; limit: number | ((context: ExecutionContext) => number | Promise<number>) | undefined; }[]; }' is not assignable to type '{ ignoreUserAgents?: RegExp[] | undefined; skipIf?: ((context: ExecutionContext) => boolean) | undefined; getTracker?: ThrottlerGetTrackerFunction | undefined; ... 4 more ...; setHeaders?: boolean | undefined; }'.
+      Types of property 'throttlers' are incompatible.
+        Type '{ name: string; ttl: number | ((context: ExecutionContext) => number | Promise<number>) | undefined; limit: number | ((context: ExecutionContext) => number | Promise<...>) | undefined; }[]' is not assignable to type 'ThrottlerOptions[]'.
+          Type '{ name: string; ttl: number | ((context: ExecutionContext) => number | Promise<number>) | undefined; limit: number | ((context: ExecutionContext) => number | Promise<number>) | undefined; }' is not assignable to type 'ThrottlerOptions'.
+            Types of property 'limit' are incompatible.
+              Type 'number | ((context: ExecutionContext) => number | Promise<number>) | undefined' is not assignable to type 'Resolvable<number>'.
+                Type 'undefined' is not assignable to type 'Resolvable<number>'.
+
+[7m54[0m             useFactory: (config: ConfigService) => ({
+[7m  [0m [91m            ~~~~~~~~~~[0m
+
+  [96m../../node_modules/@nestjs/throttler/dist/throttler-module-options.interface.d.ts[0m:[93m32[0m:[93m5[0m
+    [7m32[0m     useFactory?: (...args: any[]) => Promise<ThrottlerModuleOptions> | ThrottlerModuleOptions;
+    [7m  [0m [96m    ~~~~~~~~~~[0m
+    The expected type comes from property 'useFactory' which is declared here on type 'ThrottlerAsyncOptions'
+[96msrc/common/guards/custom-throttler.guard.ts[0m:[93m13[0m:[93m64[0m - [91merror[0m[90m TS2554: [0mExpected 3 arguments, but got 4.
+
+[7m13[0m         super(reflectorParam, configService as any, undefined, undefined);
+[7m  [0m [91m                                                               ~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m135[0m:[93m17[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'subtotal' does not exist in type 'OrderItemSumAggregateInputType'.
+
+[7m135[0m                 subtotal: true,
+[7m   [0m [91m                ~~~~~~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m20537[0m:[93m5[0m
+    [7m20537[0m     _sum?: OrderItemSumAggregateInputType
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property '_sum' which is declared here on type '{ where?: OrderItemWhereInput | undefined; orderBy?: OrderItemOrderByWithAggregationInput | OrderItemOrderByWithAggregationInput[] | undefined; ... 8 more ...; _max?: OrderItemMaxAggregateInputType | undefined; } & { ...; }'
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m167[0m:[93m21[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'subtotal' does not exist in type 'OrderItemSumAggregateInputType'.
+
+[7m167[0m                     subtotal: true,
+[7m   [0m [91m                    ~~~~~~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m20537[0m:[93m5[0m
+    [7m20537[0m     _sum?: OrderItemSumAggregateInputType
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property '_sum' which is declared here on type '{ where?: OrderItemWhereInput | undefined; orderBy?: OrderItemOrderByWithAggregationInput | OrderItemOrderByWithAggregationInput[] | undefined; ... 8 more ...; _max?: OrderItemMaxAggregateInputType | undefined; } & { ...; }'
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m173[0m:[93m31[0m - [91merror[0m[90m TS18048: [0m's._sum' is possibly 'undefined'.
+
+[7m173[0m                     quantity: s._sum.quantity || 0,
+[7m   [0m [91m                              ~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m174[0m:[93m37[0m - [91merror[0m[90m TS18048: [0m's._sum' is possibly 'undefined'.
+
+[7m174[0m                     revenue: Number(s._sum.subtotal || 0),
+[7m   [0m [91m                                    ~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m174[0m:[93m44[0m - [91merror[0m[90m TS2339: [0mProperty 'subtotal' does not exist on type '{ quantity?: number | null | undefined; unitPrice?: Decimal | null | undefined; totalPrice?: Decimal | null | undefined; modifiersPrice?: Decimal | null | undefined; itemTotal?: Decimal | ... 1 more ... | undefined; courseNumber?: number | ... 1 more ... | undefined; }'.
+
+[7m174[0m                     revenue: Number(s._sum.subtotal || 0),
+[7m   [0m [91m                                           ~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m184[0m:[93m30[0m - [91merror[0m[90m TS18048: [0m'sale._sum' is possibly 'undefined'.
+
+[7m184[0m             const quantity = sale._sum.quantity || 0;
+[7m   [0m [91m                             ~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m185[0m:[93m36[0m - [91merror[0m[90m TS18048: [0m'sale._sum' is possibly 'undefined'.
+
+[7m185[0m             const revenue = Number(sale._sum.subtotal || 0);
+[7m   [0m [91m                                   ~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m185[0m:[93m46[0m - [91merror[0m[90m TS2339: [0mProperty 'subtotal' does not exist on type '{ quantity?: number | null | undefined; unitPrice?: Decimal | null | undefined; totalPrice?: Decimal | null | undefined; modifiersPrice?: Decimal | null | undefined; itemTotal?: Decimal | ... 1 more ... | undefined; courseNumber?: number | ... 1 more ... | undefined; }'.
+
+[7m185[0m             const revenue = Number(sale._sum.subtotal || 0);
+[7m   [0m [91m                                             ~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m189[0m:[93m36[0m - [91merror[0m[90m TS18048: [0m'sale._count' is possibly 'undefined'.
+
+[7m189[0m             const orderFrequency = sale._count.orderId || 0;
+[7m   [0m [91m                                   ~~~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m189[0m:[93m48[0m - [91merror[0m[90m TS2339: [0mProperty 'orderId' does not exist on type 'true | { id?: number | undefined; orderId?: number | undefined; menuItemId?: number | undefined; itemName?: number | undefined; itemDescription?: number | undefined; quantity?: number | undefined; ... 20 more ...; _all?: number | undefined; }'.
+  Property 'orderId' does not exist on type 'true'.
+
+[7m189[0m             const orderFrequency = sale._count.orderId || 0;
+[7m   [0m [91m                                               ~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m222[0m:[93m44[0m - [91merror[0m[90m TS18047: [0m'b' is possibly 'null'.
+
+[7m222[0m                 bestSellers.sort((a, b) => b.quantity - a.quantity);
+[7m   [0m [91m                                           ~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m222[0m:[93m57[0m - [91merror[0m[90m TS18047: [0m'a' is possibly 'null'.
+
+[7m222[0m                 bestSellers.sort((a, b) => b.quantity - a.quantity);
+[7m   [0m [91m                                                        ~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m225[0m:[93m44[0m - [91merror[0m[90m TS18047: [0m'b' is possibly 'null'.
+
+[7m225[0m                 bestSellers.sort((a, b) => b.profit - a.profit);
+[7m   [0m [91m                                           ~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m225[0m:[93m55[0m - [91merror[0m[90m TS18047: [0m'a' is possibly 'null'.
+
+[7m225[0m                 bestSellers.sort((a, b) => b.profit - a.profit);
+[7m   [0m [91m                                                      ~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m228[0m:[93m44[0m - [91merror[0m[90m TS18047: [0m'b' is possibly 'null'.
+
+[7m228[0m                 bestSellers.sort((a, b) => b.revenue - a.revenue);
+[7m   [0m [91m                                           ~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m228[0m:[93m56[0m - [91merror[0m[90m TS18047: [0m'a' is possibly 'null'.
+
+[7m228[0m                 bestSellers.sort((a, b) => b.revenue - a.revenue);
+[7m   [0m [91m                                                       ~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m232[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType '{ rank: number; id?: string | undefined; name?: string | undefined; category?: string | undefined; categoryId?: string | undefined; image?: string | undefined; quantity?: number | undefined; ... 5 more ...; change?: { ...; } | undefined; }[]' is not assignable to type '({ id: string; name: string; category: string; categoryId: string; image: string | undefined; quantity: number; revenue: number; cost: number; profit: number; profitMargin: number; orderFrequency: any; rank: number; change: { ...; } | undefined; } | null)[]'.
+  Type '{ rank: number; id?: string | undefined; name?: string | undefined; category?: string | undefined; categoryId?: string | undefined; image?: string | undefined; quantity?: number | undefined; ... 5 more ...; change?: { ...; } | undefined; }' is not assignable to type '{ id: string; name: string; category: string; categoryId: string; image: string | undefined; quantity: number; revenue: number; cost: number; profit: number; profitMargin: number; orderFrequency: any; rank: number; change: { ...; } | undefined; }'.
+    Types of property 'id' are incompatible.
+      Type 'string | undefined' is not assignable to type 'string'.
+        Type 'undefined' is not assignable to type 'string'.
+
+[7m232[0m         bestSellers = bestSellers.slice(0, query.limit).map((item, index) => ({
+[7m   [0m [91m        ~~~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m441[0m:[93m17[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'tax' does not exist in type 'OrderSumAggregateInputType'.
+
+[7m441[0m                 tax: true,
+[7m   [0m [91m                ~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m19090[0m:[93m5[0m
+    [7m19090[0m     _sum?: OrderSumAggregateInputType
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property '_sum' which is declared here on type 'Subset<OrderAggregateArgs<DefaultArgs>, OrderAggregateArgs<DefaultArgs>>'
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m474[0m:[93m34[0m - [91merror[0m[90m TS18048: [0m'orders._sum' is possibly 'undefined'.
+
+[7m474[0m             totalRevenue: Number(orders._sum.total || 0),
+[7m   [0m [91m                                 ~~~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m475[0m:[93m32[0m - [91merror[0m[90m TS18048: [0m'orders._sum' is possibly 'undefined'.
+
+[7m475[0m             netRevenue: Number(orders._sum.subtotal || 0),
+[7m   [0m [91m                               ~~~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m476[0m:[93m30[0m - [91merror[0m[90m TS18048: [0m'orders._sum' is possibly 'undefined'.
+
+[7m476[0m             totalTax: Number(orders._sum.tax || 0),
+[7m   [0m [91m                             ~~~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m476[0m:[93m42[0m - [91merror[0m[90m TS2339: [0mProperty 'tax' does not exist on type '{ subtotal?: Decimal | null | undefined; taxAmount?: Decimal | null | undefined; discountAmount?: Decimal | null | undefined; serviceFee?: Decimal | null | undefined; tipAmount?: Decimal | ... 1 more ... | undefined; total?: Decimal | ... 1 more ... | undefined; totalAmount?: Decimal | ... 1 more ... | undefined; pa...'.
+
+[7m476[0m             totalTax: Number(orders._sum.tax || 0),
+[7m   [0m [91m                                         ~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m477[0m:[93m31[0m - [91merror[0m[90m TS18048: [0m'orders._sum' is possibly 'undefined'.
+
+[7m477[0m             totalTips: Number(orders._sum.tip || 0),
+[7m   [0m [91m                              ~~~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m477[0m:[93m43[0m - [91merror[0m[90m TS2339: [0mProperty 'tip' does not exist on type '{ subtotal?: Decimal | null | undefined; taxAmount?: Decimal | null | undefined; discountAmount?: Decimal | null | undefined; serviceFee?: Decimal | null | undefined; tipAmount?: Decimal | ... 1 more ... | undefined; total?: Decimal | ... 1 more ... | undefined; totalAmount?: Decimal | ... 1 more ... | undefined; pa...'.
+
+[7m477[0m             totalTips: Number(orders._sum.tip || 0),
+[7m   [0m [91m                                          ~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m478[0m:[93m35[0m - [91merror[0m[90m TS18048: [0m'orders._sum' is possibly 'undefined'.
+
+[7m478[0m             totalDiscount: Number(orders._sum.discount || 0),
+[7m   [0m [91m                                  ~~~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m478[0m:[93m47[0m - [91merror[0m[90m TS2339: [0mProperty 'discount' does not exist on type '{ subtotal?: Decimal | null | undefined; taxAmount?: Decimal | null | undefined; discountAmount?: Decimal | null | undefined; serviceFee?: Decimal | null | undefined; tipAmount?: Decimal | ... 1 more ... | undefined; total?: Decimal | ... 1 more ... | undefined; totalAmount?: Decimal | ... 1 more ... | undefined; pa...'.
+
+[7m478[0m             totalDiscount: Number(orders._sum.discount || 0),
+[7m   [0m [91m                                              ~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m479[0m:[93m25[0m - [91merror[0m[90m TS18048: [0m'orders._count' is possibly 'undefined'.
+
+[7m479[0m             orderCount: orders._count.id,
+[7m   [0m [91m                        ~~~~~~~~~~~~~[0m
+[96msrc/modules/analytics/analytics.service.ts[0m:[93m479[0m:[93m39[0m - [91merror[0m[90m TS2339: [0mProperty 'id' does not exist on type 'true | { id?: number | undefined; orderNumber?: number | undefined; type?: number | undefined; orderType?: number | undefined; status?: number | undefined; kitchenStatus?: number | undefined; ... 36 more ...; _all?: number | undefined; }'.
+  Property 'id' does not exist on type 'true'.
+
+[7m479[0m             orderCount: orders._count.id,
+[7m   [0m [91m                                      ~~[0m
+[96msrc/modules/cost-management/cost-management.controller.ts[0m:[93m16[0m:[93m30[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../auth/guards/jwt-auth.guard' or its corresponding type declarations.
+
+[7m16[0m import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+[7m  [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/cost-management/cost-management.controller.ts[0m:[93m17[0m:[93m28[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../auth/guards/roles.guard' or its corresponding type declarations.
+
+[7m17[0m import { RolesGuard } from '../../auth/guards/roles.guard';
+[7m  [0m [91m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/cost-management/cost-management.controller.ts[0m:[93m18[0m:[93m23[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../auth/decorators/roles.decorator' or its corresponding type declarations.
+
+[7m18[0m import { Roles } from '../../auth/decorators/roles.decorator';
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/cost-management/cost-management.controller.ts[0m:[93m24[0m:[93m43[0m - [91merror[0m[90m TS2307: [0mCannot find module './dto/overhead-settings.dto' or its corresponding type declarations.
+
+[7m24[0m import { UpdateOverheadSettingsDto } from './dto/overhead-settings.dto';
+[7m  [0m [91m                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/cost-management/cost-management.service.ts[0m:[93m3[0m:[93m31[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../../database/prisma.service' or its corresponding type declarations.
+
+[7m3[0m import { PrismaService } from '../../../database/prisma.service';
+[7m [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/cost-management/cost-management.service.ts[0m:[93m9[0m:[93m43[0m - [91merror[0m[90m TS2307: [0mCannot find module './dto/overhead-settings.dto' or its corresponding type declarations.
+
+[7m9[0m import { UpdateOverheadSettingsDto } from './dto/overhead-settings.dto';
+[7m [0m [91m                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/cost-management/cost-management.service.ts[0m:[93m91[0m:[93m30[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ amount: any; date: Date; description: any; reference: any; vendor: any; status: "PENDING"; frequency: any; isRecurring: boolean; parentEntryId: any; categoryId: any; restaurantId: any; createdById: any; }' is not assignable to parameter of type 'never'.
+
+[7m 91[0m                 entries.push({
+[7m   [0m [91m                             ~[0m
+[7m 92[0m                     amount: parentEntry.amount,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m103[0m                     createdById: parentEntry.createdById,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m104[0m                 });
+[7m   [0m [91m~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/cost-management/cost-management.service.ts[0m:[93m260[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'unknown' is not assignable to type 'number'.
+
+[7m260[0m             benefitsCost = Object.values(employee.benefits as any).reduce((sum: number, val: any) => sum + (Number(val) || 0), 0);
+[7m   [0m [91m            ~~~~~~~~~~~~[0m
+[96msrc/modules/health/health.module.ts[0m:[93m5[0m:[93m30[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../../prisma/prisma.module' or its corresponding type declarations.
+
+[7m5[0m import { PrismaModule } from '../../../prisma/prisma.module';
+[7m [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m114[0m:[93m25[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'restaurantId' does not exist in type 'Without<StockMovementCreateInput, StockMovementUncheckedCreateInput> & StockMovementUncheckedCreateInput'.
+
+[7m114[0m                         restaurantId,
+[7m   [0m [91m                        ~~~~~~~~~~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m31576[0m:[93m5[0m
+    [7m31576[0m     data: XOR<StockMovementCreateInput, StockMovementUncheckedCreateInput>
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property 'data' which is declared here on type '{ select?: StockMovementSelect<DefaultArgs> | null | undefined; include?: StockMovementInclude<DefaultArgs> | null | undefined; data: (Without<...> & StockMovementUncheckedCreateInput) | (Without<...> & StockMovementCreateInput); }'
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m277[0m:[93m55[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'name' does not exist in type 'UserSelect<DefaultArgs>'.
+
+[7m277[0m                     include: { createdBy: { select: { name: true } } },
+[7m   [0m [91m                                                      ~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m434[0m:[93m21[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'restaurantId' does not exist in type 'Without<StockMovementCreateInput, StockMovementUncheckedCreateInput> & StockMovementUncheckedCreateInput'.
+
+[7m434[0m                     restaurantId,
+[7m   [0m [91m                    ~~~~~~~~~~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m31576[0m:[93m5[0m
+    [7m31576[0m     data: XOR<StockMovementCreateInput, StockMovementUncheckedCreateInput>
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property 'data' which is declared here on type '{ select?: StockMovementSelect<DefaultArgs> | null | undefined; include?: StockMovementInclude<DefaultArgs> | null | undefined; data: (Without<...> & StockMovementUncheckedCreateInput) | (Without<...> & StockMovementCreateInput); }'
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m438[0m:[93m44[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'name' does not exist in type 'UserSelect<DefaultArgs>'.
+
+[7m438[0m                     createdBy: { select: { name: true } },
+[7m   [0m [91m                                           ~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m486[0m:[93m30[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ itemId: string; success: boolean; result: { movement: { id: string; createdAt: Date; type: $Enums.StockMovementType; inventoryItemId: string; quantity: Prisma.Decimal; ... 6 more ...; reference: string | null; }; item: { ...; } & { ...; }; }; }' is not assignable to parameter of type 'never'.
+
+[7m486[0m                 results.push({ itemId: adjustment.itemId, success: true, result });
+[7m   [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m488[0m:[93m30[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ itemId: string; success: boolean; error: any; }' is not assignable to parameter of type 'never'.
+
+[7m488[0m                 results.push({
+[7m   [0m [91m                             ~[0m
+[7m489[0m                     itemId: adjustment.itemId,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m491[0m                     error: error.message,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m492[0m                 });
+[7m   [0m [91m~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m498[0m:[93m49[0m - [91merror[0m[90m TS2339: [0mProperty 'success' does not exist on type 'never'.
+
+[7m498[0m             successful: results.filter((r) => r.success).length,
+[7m   [0m [91m                                                ~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m499[0m:[93m46[0m - [91merror[0m[90m TS2339: [0mProperty 'success' does not exist on type 'never'.
+
+[7m499[0m             failed: results.filter((r) => !r.success).length,
+[7m   [0m [91m                                             ~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m509[0m:[93m57[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'restaurantId' does not exist in type 'StockMovementWhereInput'.
+
+[7m509[0m         const where: Prisma.StockMovementWhereInput = { restaurantId };
+[7m   [0m [91m                                                        ~~~~~~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m542[0m:[93m54[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'name' does not exist in type 'UserSelect<DefaultArgs>'.
+
+[7m542[0m                     createdBy: { select: { id: true, name: true } },
+[7m   [0m [91m                                                     ~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m614[0m:[93m58[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'restaurantId' does not exist in type 'InventoryAlertWhereInput'.
+
+[7m614[0m         const where: Prisma.InventoryAlertWhereInput = { restaurantId };
+[7m   [0m [91m                                                         ~~~~~~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m631[0m:[93m35[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'restaurantId' does not exist in type 'InventoryAlertWhereInput'.
+
+[7m631[0m             where: { id: alertId, restaurantId },
+[7m   [0m [91m                                  ~~~~~~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m671[0m:[93m26[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'restaurantId' does not exist in type 'StockMovementWhereInput'.
+
+[7m671[0m                 where: { restaurantId, createdAt: { gte: subDays(new Date(), 7) } },
+[7m   [0m [91m                         ~~~~~~~~~~~~[0m
+[96msrc/modules/inventory/inventory.service.ts[0m:[93m758[0m:[93m21[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'restaurantId' does not exist in type 'Without<InventoryAlertCreateInput, InventoryAlertUncheckedCreateInput> & InventoryAlertUncheckedCreateInput'.
+
+[7m758[0m                     restaurantId,
+[7m   [0m [91m                    ~~~~~~~~~~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m32560[0m:[93m5[0m
+    [7m32560[0m     data: XOR<InventoryAlertCreateInput, InventoryAlertUncheckedCreateInput>
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property 'data' which is declared here on type '{ select?: InventoryAlertSelect<DefaultArgs> | null | undefined; include?: InventoryAlertInclude<DefaultArgs> | null | undefined; data: (Without<...> & InventoryAlertUncheckedCreateInput) | (Without<...> & InventoryAlertCreateInput); }'
+[96msrc/modules/inventory/processors/inventory.processor.ts[0m:[93m41[0m:[93m36[0m - [91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'name' does not exist in type 'UserSelect<DefaultArgs>'.
+
+[7m41[0m             select: { email: true, name: true },
+[7m  [0m [91m                                   ~~~~[0m
+[96msrc/modules/menu/controllers/modifier-group.controller.ts[0m:[93m24[0m:[93m30[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../../auth/guards/jwt-auth.guard' or its corresponding type declarations.
+
+[7m24[0m import { JwtAuthGuard } from '../../../auth/guards/jwt-auth.guard';
+[7m  [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m84[0m:[93m21[0m - [91merror[0m[90m TS2322: [0mType 'OrderType' is not assignable to type 'OrderType | undefined'.
+
+[7m84[0m                     type: dto.type,
+[7m  [0m [91m                    ~~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m55143[0m:[93m5[0m
+    [7m55143[0m     type?: $Enums.OrderType
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property 'type' which is declared here on type '(Without<OrderCreateInput, OrderUncheckedCreateInput> & OrderUncheckedCreateInput) | (Without<...> & OrderCreateInput)'
+[96msrc/modules/orders/orders.service.ts[0m:[93m196[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'OrderType' is not assignable to type 'OrderType | EnumOrderTypeFilter<"Order"> | undefined'.
+
+[7m196[0m             where.type = filters.type;
+[7m   [0m [91m            ~~~~~~~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m506[0m:[93m33[0m - [91merror[0m[90m TS2322: [0mType '{ id: string; name: string; description: string | null; createdAt: Date; updatedAt: Date; sortOrder: number; imageUrl: string | null; color: string | null; calories: number | null; ... 17 more ...; groupId: string; }' is not assignable to type 'null'.
+
+[7m506[0m                                 foundModifier = mod;
+[7m   [0m [91m                                ~~~~~~~~~~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m507[0m:[93m33[0m - [91merror[0m[90m TS2322: [0mType '{ modifiers: { id: string; name: string; description: string | null; createdAt: Date; updatedAt: Date; sortOrder: number; imageUrl: string | null; color: string | null; calories: number | null; ... 17 more ...; groupId: string; }[]; } & { ...; }' is not assignable to type 'null'.
+
+[7m507[0m                                 foundGroup = mig.modifierGroup;
+[7m   [0m [91m                                ~~~~~~~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m519[0m:[93m40[0m - [91merror[0m[90m TS2339: [0mProperty 'isAvailable' does not exist on type 'never'.
+
+[7m519[0m                     if (!foundModifier.isAvailable) {
+[7m   [0m [91m                                       ~~~~~~~~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m521[0m:[93m56[0m - [91merror[0m[90m TS2339: [0mProperty 'name' does not exist on type 'never'.
+
+[7m521[0m                             `Modifier "${foundModifier.name}" is not available`
+[7m   [0m [91m                                                       ~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m531[0m:[93m42[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ modifierId: any; modifierName: any; groupName: any; quantity: number; unitPrice: number; totalPrice: number; }' is not assignable to parameter of type 'never'.
+
+[7m531[0m                     modifierDetails.push({
+[7m   [0m [91m                                         ~[0m
+[7m532[0m                         modifierId: foundModifier.id,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m537[0m                         totalPrice: modTotalPrice,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m538[0m                     });
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m532[0m:[93m51[0m - [91merror[0m[90m TS2339: [0mProperty 'id' does not exist on type 'never'.
+
+[7m532[0m                         modifierId: foundModifier.id,
+[7m   [0m [91m                                                  ~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m533[0m:[93m53[0m - [91merror[0m[90m TS2339: [0mProperty 'name' does not exist on type 'never'.
+
+[7m533[0m                         modifierName: foundModifier.name,
+[7m   [0m [91m                                                    ~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m534[0m:[93m47[0m - [91merror[0m[90m TS2339: [0mProperty 'displayName' does not exist on type 'never'.
+
+[7m534[0m                         groupName: foundGroup.displayName,
+[7m   [0m [91m                                              ~~~~~~~~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m541[0m:[93m60[0m - [91merror[0m[90m TS2339: [0mProperty 'name' does not exist on type 'never'.
+
+[7m541[0m                         qty > 1 ? `${qty}× ${foundModifier.name}` : foundModifier.name
+[7m   [0m [91m                                                           ~~~~[0m
+[96msrc/modules/orders/orders.service.ts[0m:[93m541[0m:[93m83[0m - [91merror[0m[90m TS2339: [0mProperty 'name' does not exist on type 'never'.
+
+[7m541[0m                         qty > 1 ? `${qty}× ${foundModifier.name}` : foundModifier.name
+[7m   [0m [91m                                                                                  ~~~~[0m
+[96msrc/modules/printing/printing.controller.ts[0m:[93m14[0m:[93m30[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../auth/guards/jwt-auth.guard' or its corresponding type declarations.
+
+[7m14[0m import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+[7m  [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/printing/printing.controller.ts[0m:[93m15[0m:[93m28[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../auth/guards/roles.guard' or its corresponding type declarations.
+
+[7m15[0m import { RolesGuard } from '../../auth/guards/roles.guard';
+[7m  [0m [91m                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/printing/printing.controller.ts[0m:[93m16[0m:[93m23[0m - [91merror[0m[90m TS2307: [0mCannot find module '../../auth/decorators/roles.decorator' or its corresponding type declarations.
+
+[7m16[0m import { Roles } from '../../auth/decorators/roles.decorator';
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/processors/reservation.processor.ts[0m:[93m80[0m:[93m37[0m - [91merror[0m[90m TS2339: [0mProperty 'confirm' does not exist on type 'ReservationsService'.
+
+[7m80[0m             await this.reservations.confirm(reservationId, restaurantId);
+[7m  [0m [91m                                    ~~~~~~~[0m
+[96msrc/modules/reservations/processors/reservation.processor.ts[0m:[93m84[0m:[93m43[0m - [91merror[0m[90m TS2339: [0mProperty 'customerName' does not exist on type '{ restaurant: { name: string; phone: string; address: string; }; table: { number: string; id: string; isActive: boolean; createdAt: Date; updatedAt: Date; restaurantId: string; width: number; ... 15 more ...; floorPlanId: string | null; } | null; } & { ...; }'.
+
+[7m84[0m                 customerName: reservation.customerName,
+[7m  [0m [91m                                          ~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/processors/reservation.processor.ts[0m:[93m85[0m:[93m44[0m - [91merror[0m[90m TS2339: [0mProperty 'customerEmail' does not exist on type '{ restaurant: { name: string; phone: string; address: string; }; table: { number: string; id: string; isActive: boolean; createdAt: Date; updatedAt: Date; restaurantId: string; width: number; ... 15 more ...; floorPlanId: string | null; } | null; } & { ...; }'.
+
+[7m85[0m                 customerEmail: reservation.customerEmail,
+[7m  [0m [91m                                           ~~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/processors/reservation.processor.ts[0m:[93m92[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType 'string | null' is not assignable to type 'string | undefined'.
+  Type 'null' is not assignable to type 'string | undefined'.
+
+[7m92[0m                 specialRequests: reservation.specialRequests,
+[7m  [0m [91m                ~~~~~~~~~~~~~~~[0m
+
+  [96msrc/modules/notifications/notifications.service.ts[0m:[93m17[0m:[93m5[0m
+    [7m17[0m     specialRequests?: string;
+    [7m  [0m [96m    ~~~~~~~~~~~~~~~[0m
+    The expected type comes from property 'specialRequests' which is declared here on type 'ReservationConfirmationData'
+[96msrc/modules/reservations/processors/reservation.processor.ts[0m:[93m126[0m:[93m43[0m - [91merror[0m[90m TS2339: [0mProperty 'customerName' does not exist on type '{ restaurant: { name: string; phone: string; address: string; }; table: { number: string; id: string; isActive: boolean; createdAt: Date; updatedAt: Date; restaurantId: string; width: number; ... 15 more ...; floorPlanId: string | null; } | null; } & { ...; }'.
+
+[7m126[0m                 customerName: reservation.customerName,
+[7m   [0m [91m                                          ~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/processors/reservation.processor.ts[0m:[93m127[0m:[93m44[0m - [91merror[0m[90m TS2339: [0mProperty 'customerEmail' does not exist on type '{ restaurant: { name: string; phone: string; address: string; }; table: { number: string; id: string; isActive: boolean; createdAt: Date; updatedAt: Date; restaurantId: string; width: number; ... 15 more ...; floorPlanId: string | null; } | null; } & { ...; }'.
+
+[7m127[0m                 customerEmail: reservation.customerEmail,
+[7m   [0m [91m                                           ~~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/processors/reservation.processor.ts[0m:[93m167[0m:[93m43[0m - [91merror[0m[90m TS2339: [0mProperty 'customerName' does not exist on type '{ restaurant: { name: string; phone: string; }; } & { id: string; createdAt: Date; updatedAt: Date; restaurantId: string; status: ReservationStatus; createdBy: string | null; ... 37 more ...; depositPaidAt: Date | null; }'.
+
+[7m167[0m                 customerName: reservation.customerName,
+[7m   [0m [91m                                          ~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/processors/reservation.processor.ts[0m:[93m168[0m:[93m44[0m - [91merror[0m[90m TS2339: [0mProperty 'customerEmail' does not exist on type '{ restaurant: { name: string; phone: string; }; } & { id: string; createdAt: Date; updatedAt: Date; restaurantId: string; status: ReservationStatus; createdBy: string | null; ... 37 more ...; depositPaidAt: Date | null; }'.
+
+[7m168[0m                 customerEmail: reservation.customerEmail,
+[7m   [0m [91m                                           ~~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/reservations.controller.ts[0m:[93m23[0m:[93m30[0m - [91merror[0m[90m TS2307: [0mCannot find module '@/auth/guards/jwt-auth.guard' or its corresponding type declarations.
+
+[7m23[0m import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+[7m  [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/reservations.controller.ts[0m:[93m24[0m:[93m29[0m - [91merror[0m[90m TS2307: [0mCannot find module '@/auth/decorators/current-user.decorator' or its corresponding type declarations.
+
+[7m24[0m import { CurrentUser } from '@/auth/decorators/current-user.decorator';
+[7m  [0m [91m                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/reservations.service.ts[0m:[93m8[0m:[93m31[0m - [91merror[0m[90m TS2307: [0mCannot find module '@/prisma/prisma.service' or its corresponding type declarations.
+
+[7m8[0m import { PrismaService } from '@/prisma/prisma.service';
+[7m [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/reservations/reservations.service.ts[0m:[93m689[0m:[93m30[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ hour: number; label: string; reservationCount: any; guestCount: any; }' is not assignable to parameter of type 'never'.
+
+[7m689[0m             hourlyStats.push({
+[7m   [0m [91m                             ~[0m
+[7m690[0m                 hour,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m693[0m                 guestCount: hourReservations.reduce((sum, r) => sum + r.partySize, 0),
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m694[0m             });
+[7m   [0m [91m~~~~~~~~~~~~~[0m
+[96msrc/modules/tables/tables.controller.ts[0m:[93m13[0m:[93m30[0m - [91merror[0m[90m TS2307: [0mCannot find module '@/auth/guards/jwt-auth.guard' or its corresponding type declarations.
+
+[7m13[0m import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
+[7m  [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/tables/tables.service.ts[0m:[93m2[0m:[93m31[0m - [91merror[0m[90m TS2307: [0mCannot find module '@/prisma/prisma.service' or its corresponding type declarations.
+
+[7m2[0m import { PrismaService } from '@/prisma/prisma.service';
+[7m [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/tables/tables.service.ts[0m:[93m58[0m:[93m28[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ time: string; available: boolean; reservation: { id: any; guestName: any; partySize: any; startTime: string; endTime: string; status: any; } | null; }' is not assignable to parameter of type 'never'.
+
+[7m 58[0m                 slots.push({
+[7m   [0m [91m                           ~[0m
+[7m 59[0m                     time: format(slotTime, 'HH:mm'),
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 70[0m                         : null,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m 71[0m                 });
+[7m   [0m [91m~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/upload/upload.controller.ts[0m:[93m98[0m:[93m21[0m - [91merror[0m[90m TS2322: [0mType 'boolean' is not assignable to type 'string[]'.
+
+[7m98[0m                     required: false,
+[7m  [0m [91m                    ~~~~~~~~[0m
+[96msrc/modules/upload/upload.controller.ts[0m:[93m102[0m:[93m21[0m - [91merror[0m[90m TS2322: [0mType 'boolean' is not assignable to type 'string[]'.
+
+[7m102[0m                     required: false,
+[7m   [0m [91m                    ~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m65[0m:[93m38[0m - [91merror[0m[90m TS2339: [0mProperty 'unitCost' does not exist on type '{ id: string; name: string; description: string | null; isActive: boolean; createdAt: Date; updatedAt: Date; restaurantId: string; category: string | null; sku: string | null; ... 13 more ...; supplierId: string | null; }'.
+
+[7m65[0m         const unitCost = Number(item.unitCost);
+[7m  [0m [91m                                     ~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m72[0m:[93m34[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$on" | "$connect" | "$disconnect" | "$use" | "$transaction" | "$extends">'.
+
+[7m72[0m             const log = await tx.wastageLog.create({
+[7m  [0m [91m                                 ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m104[0m:[93m21[0m - [91merror[0m[90m TS2820: [0mType '"WASTE"' is not assignable to type 'StockMovementType'. Did you mean '"WASTAGE"'?
+
+[7m104[0m                     type: 'WASTE',
+[7m   [0m [91m                    ~~~~[0m
+
+  [96m../../node_modules/.prisma/client/index.d.ts[0m:[93m56796[0m:[93m5[0m
+    [7m56796[0m     type: $Enums.StockMovementType
+    [7m     [0m [96m    ~~~~[0m
+    The expected type comes from property 'type' which is declared here on type '(Without<StockMovementCreateInput, StockMovementUncheckedCreateInput> & StockMovementUncheckedCreateInput) | (Without<...> & StockMovementCreateInput)'
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m134[0m:[93m29[0m - [91merror[0m[90m TS2724: [0m'"/home/raj/CAFEelevate/node_modules/.prisma/client/index".Prisma' has no exported member named 'WastageLogWhereInput'. Did you mean 'WastageRecordWhereInput'?
+
+[7m134[0m         const where: Prisma.WastageLogWhereInput = { restaurantId };
+[7m   [0m [91m                            ~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m166[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m166[0m             this.prisma.wastageLog.findMany({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m176[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m176[0m             this.prisma.wastageLog.count({ where }),
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m177[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m177[0m             this.prisma.wastageLog.aggregate({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m205[0m:[93m39[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m205[0m         const log = await this.prisma.wastageLog.findFirst({
+[7m   [0m [91m                                      ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m244[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m244[0m             this.prisma.wastageLog.aggregate({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m249[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m249[0m             this.prisma.wastageLog.aggregate({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m254[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m254[0m             this.prisma.wastageLog.aggregate({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m259[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m259[0m             this.prisma.wastageLog.aggregate({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m263[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m263[0m             this.prisma.wastageLog.aggregate({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m267[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m267[0m             this.prisma.wastageLog.groupBy({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m308[0m:[93m29[0m - [91merror[0m[90m TS2724: [0m'"/home/raj/CAFEelevate/node_modules/.prisma/client/index".Prisma' has no exported member named 'WastageLogWhereInput'. Did you mean 'WastageRecordWhereInput'?
+
+[7m308[0m         const where: Prisma.WastageLogWhereInput = {
+[7m   [0m [91m                            ~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m314[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m314[0m             this.prisma.wastageLog.aggregate({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m319[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m319[0m             this.prisma.wastageLog.groupBy({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m326[0m:[93m25[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m326[0m             this.prisma.wastageLog.groupBy({
+[7m   [0m [91m                        ~~~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.service.ts[0m:[93m395[0m:[93m48[0m - [91merror[0m[90m TS2339: [0mProperty 'wastageLog' does not exist on type 'PrismaService'.
+
+[7m395[0m                 const data = await this.prisma.wastageLog.aggregate({
+[7m   [0m [91m                                               ~~~~~~~~~~[0m
+[96msrc/modules/inventory/inventory.controller.ts[0m:[93m205[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'InventoryStats' from external module "/home/raj/CAFEelevate/apps/api/src/modules/inventory/inventory.service" but cannot be named.
+
+[7m205[0m     async getStats(@CurrentUser('restaurantId') restaurantId: string) {
+[7m   [0m [91m          ~~~~~~~~[0m
+[96msrc/modules/wastage/wastage.controller.ts[0m:[93m49[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'WastageStats' from external module "/home/raj/CAFEelevate/apps/api/src/modules/wastage/wastage.service" but cannot be named.
+
+[7m49[0m     async getStats(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m26[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'LiveCount' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m26[0m     async getLiveCount(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m32[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'DailyStats' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m32[0m     async getDashboard(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m32[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'HourlyBreakdown' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m32[0m     async getDashboard(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m32[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'LiveCount' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m32[0m     async getDashboard(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m32[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'TrendData' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m32[0m     async getDashboard(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m38[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'LiveCount' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m38[0m     async quickIncrement(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m54[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'LiveCount' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m54[0m     async decrement(
+[7m  [0m [91m          ~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m63[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'DailyStats' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m63[0m     async getToday(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m70[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'HourlyBreakdown' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m70[0m     async getHourlyBreakdown(
+[7m  [0m [91m          ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m79[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'DailyStats' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m79[0m     async getDailyStats(
+[7m  [0m [91m          ~~~~~~~~~~~~~[0m
+[96msrc/modules/customer-counter/customer-counter.controller.ts[0m:[93m94[0m:[93m11[0m - [91merror[0m[90m TS4053: [0mReturn type of public method from exported class has or is using name 'TrendData' from external module "/home/raj/CAFEelevate/apps/api/src/modules/customer-counter/customer-counter.service" but cannot be named.
+
+[7m94[0m     async getTrends(@CurrentUser('restaurantId') restaurantId: string) {
+[7m  [0m [91m          ~~~~~~~~~[0m
+
+Found 120 error(s).
+
+npm error Lifecycle script `build` failed with error:
+npm error code 1
+npm error path /home/raj/CAFEelevate/apps/api
+npm error workspace @restaurant/api@1.0.0
+npm error location /home/raj/CAFEelevate/apps/api
+npm error command failed
+npm error command sh -c nest build

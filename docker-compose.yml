@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # DATABASE
+  # ============================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: cafeelevate-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-cafeelevate}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-cafeelevate123}
+      POSTGRES_DB: ${DB_NAME:-cafeelevate}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ 'CMD-SHELL', 'pg_isready -U ${DB_USER:-buzcupz}' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # REDIS (for caching & sessions)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: buzcupz-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ 'CMD', 'redis-cli', 'ping' ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================
+  # API (Backend)
+  # ============================================
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: buzcupz-api
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${DB_USER:-buzcupz}:${DB_PASSWORD:-buzcupz123}@postgres:5432/${DB_NAME:-buzcupz}
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-24h}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: [ 'CMD', 'wget', '--spider', '-q', 'http://localhost:3001/api/health' ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================
+  # WEB (Frontend)
+  # ============================================
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
+    container_name: buzcupz-web
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  redis_data:

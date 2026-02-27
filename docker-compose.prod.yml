@@ -1,0 +1,221 @@
+version: '3.8'
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+    internal: true
+
+volumes:
+  postgres-data:
+  redis-data:
+  traefik-certs:
+
+services:
+  # =============================================================================
+  # Traefik - Reverse Proxy with TLS Termination
+  # =============================================================================
+  traefik:
+    image: traefik:v2.10
+    container_name: cafeelevate-traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - frontend
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      - ACME_EMAIL=${ACME_EMAIL:-admin@example.com}
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./docker/traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - traefik-certs:/letsencrypt
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.dashboard.rule=Host(`traefik.${DOMAIN:-localhost}`)'
+      - 'traefik.http.routers.dashboard.service=api@internal'
+      - 'traefik.http.routers.dashboard.entrypoints=websecure'
+      - 'traefik.http.routers.dashboard.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.dashboard.middlewares=auth'
+      - 'traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_DASHBOARD_USER:-admin:$$apr1$$8kVqbYZP$$Q7Nc9M8yXaEXj0E8C6qPp1}'
+
+  # =============================================================================
+  # PostgreSQL Database - Internal Network Only
+  # =============================================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: cafeelevate-db
+    restart: unless-stopped
+    networks:
+      - backend
+    environment:
+      POSTGRES_USER: ${DB_USER:-cafeelevate}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-cafeelevate}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-cafeelevate}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # NO PORT EXPOSED - internal only
+
+  # =============================================================================
+  # Redis Cache - Internal Network Only
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: cafeelevate-redis
+    restart: unless-stopped
+    networks:
+      - backend
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # NO PORT EXPOSED - internal only
+
+  # =============================================================================
+  # API Service
+  # =============================================================================
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+    container_name: cafeelevate-api
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      API_PORT: 3001
+      DATABASE_URL: postgresql://${DB_USER:-cafeelevate}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-cafeelevate}
+      REDIS_URL: redis://redis:6379
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN:-15m}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
+      WEB_URL: ${WEB_URL:-https://app.example.com}
+      BOOKING_URL: ${BOOKING_URL:-https://booking.example.com}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://app.example.com}
+      SENTRY_DSN: ${SENTRY_DSN}
+      SENDGRID_API_KEY: ${SENDGRID_API_KEY}
+      SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+    volumes:
+      - ./uploads:/app/uploads
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:3001/api/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.api.rule=Host(`${DOMAIN:-localhost}`) && PathPrefix(`/api`)'
+      - 'traefik.http.routers.api.entrypoints=websecure'
+      - 'traefik.http.routers.api.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.api.middlewares=api-headers'
+      - 'traefik.http.services.api.loadbalancer.server.port=3001'
+      - 'traefik.http.middlewares.api-headers.headers.customresponseheaders.X-Robots-Tag=noindex,nofollow'
+
+  # =============================================================================
+  # Web Frontend
+  # =============================================================================
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: production
+        VITE_API_URL: https://${DOMAIN:-localhost}/api
+    container_name: cafeelevate-web
+    restart: unless-stopped
+    networks:
+      - frontend
+    depends_on:
+      - api
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost/']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.web.rule=Host(`${DOMAIN:-localhost}`)'
+      - 'traefik.http.routers.web.entrypoints=websecure'
+      - 'traefik.http.routers.web.tls.certresolver=letsencrypt'
+      - 'traefik.http.routers.web.middlewares=web-headers'
+      - 'traefik.http.services.web.loadbalancer.server.port=80'
+      - 'traefik.http.middlewares.web-headers.headers.customresponseheaders.X-Frame-Options=DENY'
+      - 'traefik.http.middlewares.web-headers.headers.customresponseheaders.X-Content-Type-Options=nosniff'
+
+  # =============================================================================
+  # Database Backup Service
+  # =============================================================================
+  backup:
+    image: postgres:15-alpine
+    container_name: cafeelevate-backup
+    restart: unless-stopped
+    networks:
+      - backend
+    depends_on:
+      - postgres
+    environment:
+      PGHOST: postgres
+      PGUSER: ${DB_USER:-cafeelevate}
+      PGPASSWORD: ${DB_PASSWORD}
+      PGDATABASE: ${DB_NAME:-cafeelevate}
+      BACKUP_SCHEDULE: ${BACKUP_SCHEDULE:-0 2 * * *}
+    volumes:
+      - ./backups:/backups
+      - ./scripts/backup-db.sh:/backup-db.sh:ro
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        apk add --no-cache dcron
+        echo "$${BACKUP_SCHEDULE} /backup-db.sh >> /var/log/backup.log 2>&1" | crontab -
+        crond -f -l 2

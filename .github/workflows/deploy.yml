@@ -1,0 +1,121 @@
+name: Deploy Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to production server
+        env:
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh ${SERVER_USER}@${SERVER_HOST} << 'ENDSSH'
+            set -e
+            
+            echo "📦 Deploying CAFEelevate to production..."
+            
+            # Navigate to deployment directory
+            cd ${DEPLOY_PATH}
+            
+            # Pull latest changes
+            echo "🔄 Pulling latest code..."
+            git fetch origin
+            git reset --hard origin/main
+            
+            # Backup current database
+            echo "💾 Creating database backup..."
+            docker-compose -f docker-compose.prod.yml exec -T postgres pg_dump -U cafeelevate cafeelevate | gzip > backups/pre-deploy-$(date +%Y%m%d_%H%M%S).sql.gz
+            
+            # Run database migrations
+            echo "🔄 Running database migrations..."
+            docker-compose -f docker-compose.prod.yml exec -T api npx prisma migrate deploy
+            
+            # Build and restart services
+            echo "🔨 Building and restarting services..."
+            docker-compose -f docker-compose.prod.yml build --no-cache api web
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            # Wait for services to be healthy
+            echo "⏳ Waiting for services to be healthy..."
+            sleep 10
+            
+            # Health check
+            echo "🏥 Performing health check..."
+            HEALTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${DOMAIN}/api/health)
+            
+            if [ "$HEALTH_STATUS" != "200" ]; then
+              echo "❌ Health check failed with status: $HEALTH_STATUS"
+              echo "🔄 Rolling back..."
+              git reset --hard HEAD@{1}
+              docker-compose -f docker-compose.prod.yml up -d
+              exit 1
+            fi
+            
+            echo "✅ Deployment successful!"
+            
+            # Clean up old Docker images
+            echo "🧹 Cleaning up old images..."
+            docker image prune -af --filter "until=24h"
+          ENDSSH
+
+      - name: Verify deployment
+        env:
+          DOMAIN: ${{ secrets.DOMAIN }}
+        run: |
+          echo "🔍 Verifying deployment..."
+          
+          # Check API health
+          API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${DOMAIN}/api/health)
+          if [ "$API_STATUS" != "200" ]; then
+            echo "❌ API health check failed"
+            exit 1
+          fi
+          
+          # Check web frontend
+          WEB_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://${DOMAIN})
+          if [ "$WEB_STATUS" != "200" ]; then
+            echo "❌ Web health check failed"
+            exit 1
+          fi
+          
+          echo "✅ All services are healthy"
+
+      - name: Notify deployment success
+        if: success()
+        run: |
+          echo "🚀 Deployment completed successfully!"
+          echo "Environment: production"
+          echo "Commit: ${{ github.sha }}"
+          echo "Deployed by: ${{ github.actor }}"
+
+      - name: Notify deployment failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Please check the logs and rollback if necessary"

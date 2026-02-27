@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Your Data Export is Ready</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 8px 8px 0 0;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    .content {
+      background: #f9fafb;
+      padding: 30px;
+      border: 1px solid #e5e7eb;
+      border-top: none;
+    }
+    .button {
+      display: inline-block;
+      padding: 14px 28px;
+      background: #10B981;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      margin: 20px 0;
+      font-size: 16px;
+    }
+    .button:hover {
+      background: #059669;
+    }
+    .footer {
+      background: #f3f4f6;
+      padding: 20px 30px;
+      border: 1px solid #e5e7eb;
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .info-box {
+      background: #dbeafe;
+      border-left: 4px solid #3b82f6;
+      padding: 16px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+    .warning {
+      background: #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 12px;
+      margin: 20px 0;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>✅ Your Data is Ready!</h1>
+  </div>
+  
+  <div class="content">
+    <p>Hello,</p>
+    
+    <p>Great news! Your data export from <strong>CAFEelevate</strong> has been successfully processed and is now ready for download.</p>
+    
+    <div style="text-align: center;">
+      <a href="{{downloadUrl}}" class="button">📥 Download Your Data</a>
+    </div>
+    
+    <div class="warning">
+      <strong>⚠️ Important:</strong> This download link will expire in <strong>{{expiresIn}}</strong>. Please download your data soon!
+    </div>
+    
+    <div class="info-box">
+      <h3 style="margin-top: 0;">What's Included:</h3>
+      <p>Your download is a ZIP archive containing:</p>
+      <ul style="margin-bottom: 0;">
+        <li><strong>README.txt</strong> - Information about the export</li>
+        <li><strong>account.json</strong> - Your account details</li>
+        <li><strong>orders.json</strong> - Order history</li>
+        <li><strong>reservations.json</strong> - Reservation records</li>
+        <li><strong>profile.json</strong> - Profile and preferences</li>
+      </ul>
+    </div>
+    
+    <h3>What Happens Next?</h3>
+    <p>After the expiration period, the download link will be automatically disabled and the export file will be permanently deleted from our servers for security.</p>
+    
+    <p>If you need another copy after expiration, you can request a new export from your account settings.</p>
+  </div>
+  
+  <div class="footer">
+    <p><strong>Data Privacy:</strong> Your data export contains sensitive information. Please store it securely.</p>
+    <p>Questions? Contact us at privacy@cafeelevate.com or visit our <a href="https://cafeelevate.com/privacy">Privacy Center</a></p>
+  </div>
+</body>
+</html>
