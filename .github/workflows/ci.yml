@@ -8,7 +8,6 @@ on:
 
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '8'
 
 jobs:
   lint:
@@ -19,25 +18,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Lint
-        run: pnpm lint
+        run: npm run lint
 
       - name: Type check
-        run: pnpm typecheck
+        run: npm run typecheck
 
   test-backend:
     name: Backend Tests
@@ -63,30 +57,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Generate Prisma Client
-        run: pnpm --filter api prisma:generate
+        run: npm run db:generate
 
       - name: Run migrations
-        run: pnpm --filter api prisma:migrate:deploy
+        run: npm run db:migrate:deploy
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/cafeelevate_test
 
       - name: Run tests
-        run: pnpm --filter api test:cov
+        run: npm run test:cov --workspace=apps/api
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/cafeelevate_test
           JWT_SECRET: test-secret-key-minimum-32-characters-long-for-testing
@@ -128,22 +117,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run tests
-        run: pnpm --filter web test:cov
+        run: npm run test:cov --workspace=apps/web
 
       - name: Upload coverage
         uses: codecov/codecov-action@v3
@@ -161,30 +145,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: 'npm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
-      - name: Build shared packages
-        run: pnpm --filter @cafeelevate/shared build
-
-      - name: Build API
-        run: pnpm --filter api build
-
-      - name: Build Web
-        run: pnpm --filter web build
-        env:
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+      - name: Build all
+        run: npm run build
 
       - name: Upload API build artifact
         uses: actions/upload-artifact@v4

@@ -1,5 +1,16 @@
 name: Deploy Production
 
+# ⚠️  DISABLED: This workflow requires a production server with the following
+# GitHub secrets configured before it can be re-enabled:
+#   - SSH_PRIVATE_KEY   : Private SSH key to access the server
+#   - SERVER_USER       : SSH username (e.g. ubuntu)
+#   - SERVER_HOST       : Server IP or hostname
+#   - DEPLOY_PATH       : Absolute path on server (e.g. /opt/cafeelevate)
+#   - DOMAIN            : Public domain (e.g. cafeelevate.com)
+#   - VITE_API_URL      : API URL for the frontend build
+#
+# To re-enable, remove the `if: false` condition from the deploy job below.
+
 on:
   push:
     branches:
@@ -14,6 +25,8 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     environment: production
+    # Remove the line below once server and secrets are configured
+    if: false
 
     steps:
       - name: Checkout code
