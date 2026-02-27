@@ -1,7 +1,12 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/database/prisma.service';
-import { TicketStatus, TicketPriority, TicketCategory, SenderType } from '@prisma/client';
-import { NotificationsService } from '@/modules/notifications/notifications.service';
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "@/database/prisma.service";
+import {
+  TicketStatus,
+  TicketPriority,
+  TicketCategory,
+  SenderType,
+} from "@prisma/client";
+import { NotificationsService } from "@/modules/notifications/notifications.service";
 
 @Injectable()
 export class TicketService {
@@ -21,7 +26,12 @@ export class TicketService {
     description: string;
     category: TicketCategory;
     priority?: TicketPriority;
-    attachments?: Array<{ filename: string; fileUrl: string; fileSize: number; mimeType: string }>;
+    attachments?: Array<{
+      filename: string;
+      fileUrl: string;
+      fileSize: number;
+      mimeType: string;
+    }>;
   }) {
     const ticketNumber = await this.generateTicketNumber();
 
@@ -49,7 +59,7 @@ export class TicketService {
     });
 
     // Send confirmation email
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.APP_URL || "http://localhost:3000";
     await this.notifications.sendEmail({
       to: params.email,
       subject: `[Ticket #${ticketNumber}] ${params.subject}`,
@@ -76,14 +86,19 @@ export class TicketService {
     senderEmail: string;
     content: string;
     isInternal?: boolean;
-    attachments?: Array<{ filename: string; fileUrl: string; fileSize: number; mimeType: string }>;
+    attachments?: Array<{
+      filename: string;
+      fileUrl: string;
+      fileSize: number;
+      mimeType: string;
+    }>;
   }) {
     const ticket = await this.prisma.supportTicket.findUnique({
       where: { id: params.ticketId },
     });
 
     if (!ticket) {
-      throw new NotFoundException('Ticket not found');
+      throw new NotFoundException("Ticket not found");
     }
 
     const message = await this.prisma.ticketMessage.create({
@@ -132,7 +147,7 @@ export class TicketService {
 
     // Send notification for non-internal messages
     if (!params.isInternal) {
-      const appUrl = process.env.APP_URL || 'http://localhost:3000';
+      const appUrl = process.env.APP_URL || "http://localhost:3000";
       if (params.senderType === SenderType.SUPPORT_AGENT) {
         // Notify customer of reply
         await this.notifications.sendEmail({
@@ -174,7 +189,6 @@ export class TicketService {
       data: updateData,
     });
 
-    
     // await this.emailService.send({
     //   to: ticket.email,
     //   subject: `[Ticket #${ticket.ticketNumber}] Status Updated: ${status}`,
@@ -223,9 +237,9 @@ export class TicketService {
     if (params.assignedToId) where.assignedToId = params.assignedToId;
     if (params.search) {
       where.OR = [
-        { subject: { contains: params.search, mode: 'insensitive' } },
-        { description: { contains: params.search, mode: 'insensitive' } },
-        { ticketNumber: { contains: params.search, mode: 'insensitive' } },
+        { subject: { contains: params.search, mode: "insensitive" } },
+        { description: { contains: params.search, mode: "insensitive" } },
+        { ticketNumber: { contains: params.search, mode: "insensitive" } },
       ];
     }
 
@@ -237,10 +251,7 @@ export class TicketService {
           assignedTo: { select: { name: true, email: true } },
           _count: { select: { messages: true } },
         },
-        orderBy: [
-          { priority: 'desc' },
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -266,7 +277,7 @@ export class TicketService {
         user: { select: { firstName: true, lastName: true, email: true } },
         assignedTo: { select: { name: true, email: true } },
         messages: {
-          orderBy: { createdAt: 'asc' },
+          orderBy: { createdAt: "asc" },
           include: { attachments: true },
         },
         attachments: true,
@@ -290,20 +301,20 @@ export class TicketService {
 
   private async generateTicketNumber(): Promise<string> {
     const date = new Date();
-    const prefix = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}`;
-    
+    const prefix = `${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, "0")}`;
+
     const lastTicket = await this.prisma.supportTicket.findFirst({
       where: {
         ticketNumber: { startsWith: prefix },
       },
-      orderBy: { ticketNumber: 'desc' },
+      orderBy: { ticketNumber: "desc" },
     });
 
     const sequence = lastTicket
       ? parseInt(lastTicket.ticketNumber.slice(-4)) + 1
       : 1;
 
-    return `${prefix}${String(sequence).padStart(4, '0')}`;
+    return `${prefix}${String(sequence).padStart(4, "0")}`;
   }
 
   /**

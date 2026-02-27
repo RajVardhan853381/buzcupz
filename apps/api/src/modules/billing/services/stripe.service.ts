@@ -1,6 +1,6 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import Stripe from 'stripe';
+import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import Stripe from "stripe";
 
 @Injectable()
 export class StripeService implements OnModuleInit {
@@ -9,30 +9,30 @@ export class StripeService implements OnModuleInit {
 
   // Price IDs from Stripe Dashboard
   private readonly PRICE_IDS = {
-    STARTER: this.configService.get('STRIPE_PRICE_STARTER'),
-    PROFESSIONAL: this.configService.get('STRIPE_PRICE_PROFESSIONAL'),
-    ENTERPRISE: this.configService.get('STRIPE_PRICE_ENTERPRISE'),
+    STARTER: this.configService.get("STRIPE_PRICE_STARTER"),
+    PROFESSIONAL: this.configService.get("STRIPE_PRICE_PROFESSIONAL"),
+    ENTERPRISE: this.configService.get("STRIPE_PRICE_ENTERPRISE"),
   };
 
   constructor(private readonly configService: ConfigService) {}
 
   onModuleInit() {
-    const apiKey = this.configService.get('STRIPE_SECRET_KEY');
+    const apiKey = this.configService.get("STRIPE_SECRET_KEY");
     if (!apiKey) {
-      this.logger.warn('Stripe API key not configured');
+      this.logger.warn("Stripe API key not configured");
       return;
     }
 
     this.stripe = new Stripe(apiKey, {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: "2024-11-20.acacia",
       typescript: true,
     });
-    this.logger.log('Stripe initialized');
+    this.logger.log("Stripe initialized");
   }
 
   getStripe(): Stripe {
     if (!this.stripe) {
-      throw new Error('Stripe not initialized');
+      throw new Error("Stripe not initialized");
     }
     return this.stripe;
   }
@@ -56,7 +56,9 @@ export class StripeService implements OnModuleInit {
   }
 
   async getCustomer(customerId: string): Promise<Stripe.Customer> {
-    return this.stripe.customers.retrieve(customerId) as Promise<Stripe.Customer>;
+    return this.stripe.customers.retrieve(
+      customerId,
+    ) as Promise<Stripe.Customer>;
   }
 
   async updateCustomer(
@@ -77,11 +79,11 @@ export class StripeService implements OnModuleInit {
     const subscriptionParams: Stripe.SubscriptionCreateParams = {
       customer: params.customerId,
       items: [{ price: params.priceId }],
-      payment_behavior: 'default_incomplete',
+      payment_behavior: "default_incomplete",
       payment_settings: {
-        save_default_payment_method: 'on_subscription',
+        save_default_payment_method: "on_subscription",
       },
-      expand: ['latest_invoice.payment_intent'],
+      expand: ["latest_invoice.payment_intent"],
       metadata: params.metadata,
     };
 
@@ -94,7 +96,7 @@ export class StripeService implements OnModuleInit {
 
   async getSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
     return this.stripe.subscriptions.retrieve(subscriptionId, {
-      expand: ['latest_invoice', 'default_payment_method'],
+      expand: ["latest_invoice", "default_payment_method"],
     });
   }
 
@@ -117,7 +119,9 @@ export class StripeService implements OnModuleInit {
     });
   }
 
-  async resumeSubscription(subscriptionId: string): Promise<Stripe.Subscription> {
+  async resumeSubscription(
+    subscriptionId: string,
+  ): Promise<Stripe.Subscription> {
     return this.stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: false,
     });
@@ -135,7 +139,7 @@ export class StripeService implements OnModuleInit {
           price: newPriceId,
         },
       ],
-      proration_behavior: 'create_prorations',
+      proration_behavior: "create_prorations",
     });
   }
 
@@ -144,14 +148,16 @@ export class StripeService implements OnModuleInit {
   async createSetupIntent(customerId: string): Promise<Stripe.SetupIntent> {
     return this.stripe.setupIntents.create({
       customer: customerId,
-      payment_method_types: ['card'],
+      payment_method_types: ["card"],
     });
   }
 
-  async listPaymentMethods(customerId: string): Promise<Stripe.PaymentMethod[]> {
+  async listPaymentMethods(
+    customerId: string,
+  ): Promise<Stripe.PaymentMethod[]> {
     const response = await this.stripe.paymentMethods.list({
       customer: customerId,
-      type: 'card',
+      type: "card",
     });
     return response.data;
   }
@@ -167,13 +173,18 @@ export class StripeService implements OnModuleInit {
     });
   }
 
-  async detachPaymentMethod(paymentMethodId: string): Promise<Stripe.PaymentMethod> {
+  async detachPaymentMethod(
+    paymentMethodId: string,
+  ): Promise<Stripe.PaymentMethod> {
     return this.stripe.paymentMethods.detach(paymentMethodId);
   }
 
   // ============ INVOICES ============
 
-  async listInvoices(customerId: string, limit = 10): Promise<Stripe.Invoice[]> {
+  async listInvoices(
+    customerId: string,
+    limit = 10,
+  ): Promise<Stripe.Invoice[]> {
     const response = await this.stripe.invoices.list({
       customer: customerId,
       limit,
@@ -217,14 +228,16 @@ export class StripeService implements OnModuleInit {
     });
   }
 
-  async capturePaymentIntent(paymentIntentId: string): Promise<Stripe.PaymentIntent> {
+  async capturePaymentIntent(
+    paymentIntentId: string,
+  ): Promise<Stripe.PaymentIntent> {
     return this.stripe.paymentIntents.capture(paymentIntentId);
   }
 
   async refundPayment(params: {
     paymentIntentId: string;
     amount?: number; // partial refund in cents
-    reason?: 'duplicate' | 'fraudulent' | 'requested_by_customer';
+    reason?: "duplicate" | "fraudulent" | "requested_by_customer";
   }): Promise<Stripe.Refund> {
     return this.stripe.refunds.create({
       payment_intent: params.paymentIntentId,
@@ -256,7 +269,7 @@ export class StripeService implements OnModuleInit {
   }): Promise<Stripe.Checkout.Session> {
     return this.stripe.checkout.sessions.create({
       customer: params.customerId,
-      mode: 'subscription',
+      mode: "subscription",
       line_items: [{ price: params.priceId, quantity: 1 }],
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
@@ -269,11 +282,15 @@ export class StripeService implements OnModuleInit {
   // ============ WEBHOOKS ============
 
   constructWebhookEvent(payload: Buffer, signature: string): Stripe.Event {
-    const webhookSecret = this.configService.get('STRIPE_WEBHOOK_SECRET');
+    const webhookSecret = this.configService.get("STRIPE_WEBHOOK_SECRET");
     if (!webhookSecret) {
-      throw new Error('Stripe webhook secret not configured');
+      throw new Error("Stripe webhook secret not configured");
     }
-    return this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+    return this.stripe.webhooks.constructEvent(
+      payload,
+      signature,
+      webhookSecret,
+    );
   }
 
   // ============ HELPERS ============

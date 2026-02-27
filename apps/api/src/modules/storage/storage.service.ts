@@ -1,20 +1,25 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import * as fs from 'fs';
-import * as path from 'path';
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import * as fs from "fs";
+import * as path from "path";
 
 /**
  * StorageService - Handles file uploads with S3 and local fallback
- * 
+ *
  * Features:
  * - AWS S3 integration for production
  * - Local filesystem fallback for development
  * - Presigned URL generation
  * - File deletion
  * - Automatic directory creation
- * 
+ *
  * Environment Variables Required:
  * - AWS_REGION (optional, defaults to us-east-1)
  * - AWS_ACCESS_KEY_ID (optional, uses local storage if not set)
@@ -31,12 +36,12 @@ export class StorageService {
   private readonly useS3: boolean;
 
   constructor(private readonly config: ConfigService) {
-    this.bucket = this.config.get('AWS_S3_BUCKET', 'cafeelevate-storage');
-    this.localStoragePath = path.join(process.cwd(), 'uploads');
+    this.bucket = this.config.get("AWS_S3_BUCKET", "cafeelevate-storage");
+    this.localStoragePath = path.join(process.cwd(), "uploads");
 
-    const region = this.config.get('AWS_REGION', 'us-east-1');
-    const accessKeyId = this.config.get('AWS_ACCESS_KEY_ID');
-    const secretAccessKey = this.config.get('AWS_SECRET_ACCESS_KEY');
+    const region = this.config.get("AWS_REGION", "us-east-1");
+    const accessKeyId = this.config.get("AWS_ACCESS_KEY_ID");
+    const secretAccessKey = this.config.get("AWS_SECRET_ACCESS_KEY");
 
     // Initialize S3 if credentials are available
     if (accessKeyId && secretAccessKey) {
@@ -45,11 +50,15 @@ export class StorageService {
         credentials: { accessKeyId, secretAccessKey },
       });
       this.useS3 = true;
-      this.logger.log(`✅ S3 storage initialized (bucket: ${this.bucket}, region: ${region})`);
+      this.logger.log(
+        `✅ S3 storage initialized (bucket: ${this.bucket}, region: ${region})`,
+      );
     } else {
       this.s3Client = null;
       this.useS3 = false;
-      this.logger.warn('⚠️ AWS credentials not configured - using local filesystem storage');
+      this.logger.warn(
+        "⚠️ AWS credentials not configured - using local filesystem storage",
+      );
       this.ensureLocalStorageExists();
     }
   }
@@ -74,7 +83,13 @@ export class StorageService {
     const expiresIn = options?.expiresIn || 7 * 24 * 60 * 60; // 7 days default
 
     if (this.useS3 && this.s3Client) {
-      return this.uploadToS3(key, body, contentType, expiresIn, options?.metadata);
+      return this.uploadToS3(
+        key,
+        body,
+        contentType,
+        expiresIn,
+        options?.metadata,
+      );
     } else {
       return this.uploadToLocal(key, body);
     }
@@ -102,7 +117,9 @@ export class StorageService {
         }),
       );
 
-      this.logger.log(`✅ Uploaded to S3: ${key} (${(body.length / 1024).toFixed(2)} KB)`);
+      this.logger.log(
+        `✅ Uploaded to S3: ${key} (${(body.length / 1024).toFixed(2)} KB)`,
+      );
 
       // Generate presigned URL
       const command = new GetObjectCommand({
@@ -132,10 +149,12 @@ export class StorageService {
       // Write file
       await fs.promises.writeFile(filePath, body);
 
-      this.logger.log(`✅ Saved locally: ${key} (${(body.length / 1024).toFixed(2)} KB)`);
+      this.logger.log(
+        `✅ Saved locally: ${key} (${(body.length / 1024).toFixed(2)} KB)`,
+      );
 
       // Return public URL
-      const appUrl = this.config.get('APP_URL', 'http://localhost:3000');
+      const appUrl = this.config.get("APP_URL", "http://localhost:3000");
       return `${appUrl}/uploads/${key}`;
     } catch (error) {
       this.logger.error(`❌ Local storage failed for ${key}:`, error);
@@ -151,7 +170,7 @@ export class StorageService {
   async getSignedUrl(key: string, expiresIn = 3600): Promise<string> {
     if (!this.useS3 || !this.s3Client) {
       // For local storage, just return direct URL
-      const appUrl = this.config.get('APP_URL', 'http://localhost:3000');
+      const appUrl = this.config.get("APP_URL", "http://localhost:3000");
       return `${appUrl}/uploads/${key}`;
     }
 
@@ -219,38 +238,40 @@ export class StorageService {
     try {
       if (!fs.existsSync(this.localStoragePath)) {
         fs.mkdirSync(this.localStoragePath, { recursive: true });
-        this.logger.log(`✅ Created local storage directory: ${this.localStoragePath}`);
+        this.logger.log(
+          `✅ Created local storage directory: ${this.localStoragePath}`,
+        );
       }
     } catch (error) {
-      this.logger.error('❌ Failed to create local storage directory:', error);
+      this.logger.error("❌ Failed to create local storage directory:", error);
     }
   }
 
   /**
    * Get storage type (for debugging/monitoring)
    */
-  getStorageType(): 'S3' | 'LOCAL' {
-    return this.useS3 ? 'S3' : 'LOCAL';
+  getStorageType(): "S3" | "LOCAL" {
+    return this.useS3 ? "S3" : "LOCAL";
   }
 
   /**
    * Get storage stats (for monitoring)
    */
   getStorageInfo(): {
-    type: 'S3' | 'LOCAL';
+    type: "S3" | "LOCAL";
     bucket?: string;
     region?: string;
     localPath?: string;
   } {
     if (this.useS3) {
       return {
-        type: 'S3',
+        type: "S3",
         bucket: this.bucket,
-        region: this.config.get('AWS_REGION', 'us-east-1'),
+        region: this.config.get("AWS_REGION", "us-east-1"),
       };
     } else {
       return {
-        type: 'LOCAL',
+        type: "LOCAL",
         localPath: this.localStoragePath,
       };
     }

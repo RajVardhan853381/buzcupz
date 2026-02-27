@@ -1,57 +1,59 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 interface ReservationConfirmationData {
-    customerName: string;
-    customerEmail: string;
-    confirmationCode: string;
-    date: string;
-    time: string;
-    partySize: number;
-    tableNumber?: string;
-    restaurant: {
-        name: string;
-        phone: string;
-        address: string;
-    };
-    specialRequests?: string;
+  customerName: string;
+  customerEmail: string;
+  confirmationCode: string;
+  date: string;
+  time: string;
+  partySize: number;
+  tableNumber?: string;
+  restaurant: {
+    name: string;
+    phone: string;
+    address: string;
+  };
+  specialRequests?: string;
 }
 
 interface ReservationReminderData {
-    customerName: string;
-    customerEmail: string;
-    confirmationCode: string;
-    date: string;
-    time: string;
-    partySize: number;
-    restaurant: {
-        name: string;
-        phone: string;
-        address: string;
-    };
+  customerName: string;
+  customerEmail: string;
+  confirmationCode: string;
+  date: string;
+  time: string;
+  partySize: number;
+  restaurant: {
+    name: string;
+    phone: string;
+    address: string;
+  };
 }
 
 interface ReservationCancellationData {
-    customerName: string;
-    customerEmail: string;
-    confirmationCode: string;
-    date: string;
-    time: string;
-    restaurant: {
-        name: string;
-        phone: string;
-    };
-    reason?: string;
+  customerName: string;
+  customerEmail: string;
+  confirmationCode: string;
+  date: string;
+  time: string;
+  restaurant: {
+    name: string;
+    phone: string;
+  };
+  reason?: string;
 }
 
 @Injectable()
 export class NotificationsService {
-    private readonly logger = new Logger(NotificationsService.name);
+  private readonly logger = new Logger(NotificationsService.name);
 
-    constructor(private readonly config: ConfigService) { }
+  constructor(private readonly config: ConfigService) {}
 
-    async sendReservationConfirmation(data: ReservationConfirmationData): Promise<void> {
-        const emailContent = `
+  async sendReservationConfirmation(
+    data: ReservationConfirmationData,
+  ): Promise<void> {
+    const emailContent = `
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                    RESERVATION CONFIRMATION                          ║
 ╠══════════════════════════════════════════════════════════════════════╣
@@ -63,23 +65,23 @@ export class NotificationsService {
 ║  📅  ${data.date}                                                   
 ║  🕐  ${data.time}                                                   
 ║  👥  ${data.partySize} guests                                       
-║  🪑  Table ${data.tableNumber || 'TBA'}                             
+║  🪑  Table ${data.tableNumber || "TBA"}                             
 ║                                                                      ║
 ║  Confirmation Code: ${data.confirmationCode}                        
 ║                                                                      ║
 ║  📍 ${data.restaurant.address}                                      
 ║  📞 ${data.restaurant.phone}                                        
-${data.specialRequests ? `║  📝 Special Requests: ${data.specialRequests}\n` : ''}║                                                                      ║
+${data.specialRequests ? `║  📝 Special Requests: ${data.specialRequests}\n` : ""}║                                                                      ║
 ║  We look forward to seeing you!                                     
 ╚══════════════════════════════════════════════════════════════════════╝
     `;
 
-        this.logger.log(emailContent);
-        this.logger.log(`✉️  Confirmation email sent to: ${data.customerEmail}`);
-    }
+    this.logger.log(emailContent);
+    this.logger.log(`✉️  Confirmation email sent to: ${data.customerEmail}`);
+  }
 
-    async sendReservationReminder(data: ReservationReminderData): Promise<void> {
-        const emailContent = `
+  async sendReservationReminder(data: ReservationReminderData): Promise<void> {
+    const emailContent = `
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                    RESERVATION REMINDER                              ║
 ╠══════════════════════════════════════════════════════════════════════╣
@@ -97,12 +99,14 @@ ${data.specialRequests ? `║  📝 Special Requests: ${data.specialRequests}\n`
 ╚══════════════════════════════════════════════════════════════════════╝
     `;
 
-        this.logger.log(emailContent);
-        this.logger.log(`⏰ Reminder sent to: ${data.customerEmail}`);
-    }
+    this.logger.log(emailContent);
+    this.logger.log(`⏰ Reminder sent to: ${data.customerEmail}`);
+  }
 
-    async sendReservationCancellation(data: ReservationCancellationData): Promise<void> {
-        const emailContent = `
+  async sendReservationCancellation(
+    data: ReservationCancellationData,
+  ): Promise<void> {
+    const emailContent = `
 ╔══════════════════════════════════════════════════════════════════════╗
 ║                  RESERVATION CANCELLED                               ║
 ╠══════════════════════════════════════════════════════════════════════╣
@@ -113,29 +117,38 @@ ${data.specialRequests ? `║  📝 Special Requests: ${data.specialRequests}\n`
 ║  📅  ${data.date}                                                   
 ║  🕐  ${data.time}                                                   
 ║  🔖  ${data.confirmationCode}                                       
-${data.reason ? `║  📝  Reason: ${data.reason}\n` : ''}║                                                                      ║
+${data.reason ? `║  📝  Reason: ${data.reason}\n` : ""}║                                                                      ║
 ║  We hope to see you another time!                                   
 ╚══════════════════════════════════════════════════════════════════════╝
     `;
 
-        this.logger.log(emailContent);
-        this.logger.log(`❌ Cancellation notice sent to: ${data.customerEmail}`);
-    }
-    async sendEmail(options: { to: string; subject: string; html: string }): Promise<void> {
-        this.logger.log(`📧 Sending EMAIL to ${options.to}`);
-        this.logger.log(`Subject: ${options.subject}`);
-        this.logger.log(`Body: ${options.html.substring(0, 100)}...`);
-    }
+    this.logger.log(emailContent);
+    this.logger.log(`❌ Cancellation notice sent to: ${data.customerEmail}`);
+  }
+  async sendEmail(options: {
+    to: string;
+    subject: string;
+    html: string;
+  }): Promise<void> {
+    this.logger.log(`📧 Sending EMAIL to ${options.to}`);
+    this.logger.log(`Subject: ${options.subject}`);
+    this.logger.log(`Body: ${options.html.substring(0, 100)}...`);
+  }
 
-    async sendSMS(options: { to: string; message: string }): Promise<void> {
-        this.logger.log(`📱 Sending SMS to ${options.to}: "${options.message}"`);
-    }
+  async sendSMS(options: { to: string; message: string }): Promise<void> {
+    this.logger.log(`📱 Sending SMS to ${options.to}: "${options.message}"`);
+  }
 
-    async sendToRestaurant(restaurantId: string, notification: { type: string; data: any }): Promise<void> {
-        this.logger.log(`🏢 Notification for Restaurant ${restaurantId}: [${notification.type}]`);
-    }
+  async sendToRestaurant(
+    restaurantId: string,
+    notification: { type: string; data: any },
+  ): Promise<void> {
+    this.logger.log(
+      `🏢 Notification for Restaurant ${restaurantId}: [${notification.type}]`,
+    );
+  }
 
-    async sendToUser(userId: string, notification: any): Promise<void> {
-        this.logger.log(`👤 Notification for User ${userId}:`, notification);
-    }
+  async sendToUser(userId: string, notification: any): Promise<void> {
+    this.logger.log(`👤 Notification for User ${userId}:`, notification);
+  }
 }

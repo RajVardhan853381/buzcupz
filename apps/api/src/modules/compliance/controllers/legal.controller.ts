@@ -1,18 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { PrismaService } from '../../../database/prisma.service';
-import { ConsentService } from '../services/consent.service';
-import { GdprService } from '../services/gdpr.service';
-import { JwtAuthGuard } from '@/common/guards/jwt-auth.guard';
-import { Public } from '../../../common/decorators/public.decorator';
-import { LegalDocType, ConsentType } from '@prisma/client';
+import { Controller, Get, Post, Body, Param, UseGuards } from "@nestjs/common";
+import { ApiTags, ApiOperation } from "@nestjs/swagger";
+import { PrismaService } from "../../../database/prisma.service";
+import { ConsentService } from "../services/consent.service";
+import { GdprService } from "../services/gdpr.service";
+import { JwtAuthGuard } from "@/common/guards/jwt-auth.guard";
+import { Public } from "../../../common/decorators/public.decorator";
+import { LegalDocType, ConsentType } from "@prisma/client";
 
 interface CurrentUser {
   id: string;
@@ -26,8 +19,8 @@ const CurrentUser = () => {
   };
 };
 
-@ApiTags('Legal & Compliance')
-@Controller('legal')
+@ApiTags("Legal & Compliance")
+@Controller("legal")
 export class LegalController {
   constructor(
     private readonly prisma: PrismaService,
@@ -37,22 +30,22 @@ export class LegalController {
 
   // ============ PUBLIC ENDPOINTS ============
 
-  @Get('documents/:type')
+  @Get("documents/:type")
   @Public()
-  @ApiOperation({ summary: 'Get legal document by type' })
-  async getDocument(@Param('type') type: LegalDocType) {
+  @ApiOperation({ summary: "Get legal document by type" })
+  async getDocument(@Param("type") type: LegalDocType) {
     const document = await this.prisma.legalDocument.findFirst({
       where: { type, isActive: true },
-      orderBy: { effectiveDate: 'desc' },
+      orderBy: { effectiveDate: "desc" },
     });
 
     return document;
   }
 
-  @Get('documents/:type/versions')
+  @Get("documents/:type/versions")
   @Public()
-  @ApiOperation({ summary: 'Get all versions of a legal document' })
-  async getDocumentVersions(@Param('type') type: LegalDocType) {
+  @ApiOperation({ summary: "Get all versions of a legal document" })
+  async getDocumentVersions(@Param("type") type: LegalDocType) {
     return this.prisma.legalDocument.findMany({
       where: { type },
       select: {
@@ -60,15 +53,15 @@ export class LegalController {
         effectiveDate: true,
         isActive: true,
       },
-      orderBy: { effectiveDate: 'desc' },
+      orderBy: { effectiveDate: "desc" },
     });
   }
 
   // ============ CONSENT MANAGEMENT ============
 
-  @Post('consent')
+  @Post("consent")
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Record user consent' })
+  @ApiOperation({ summary: "Record user consent" })
   async recordConsent(
     @CurrentUser() user: CurrentUser,
     @Body() body: { consents: Array<{ type: ConsentType; granted: boolean }> },
@@ -81,16 +74,16 @@ export class LegalController {
     return { success: true };
   }
 
-  @Get('consent')
+  @Get("consent")
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Get user consents' })
+  @ApiOperation({ summary: "Get user consents" })
   async getConsents(@CurrentUser() user: CurrentUser) {
     return this.consentService.getConsents({ userId: user.id });
   }
 
-  @Post('consent/revoke')
+  @Post("consent/revoke")
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Revoke consent' })
+  @ApiOperation({ summary: "Revoke consent" })
   async revokeConsent(
     @CurrentUser() user: CurrentUser,
     @Body() body: { type: ConsentType },
@@ -105,35 +98,36 @@ export class LegalController {
 
   // ============ DATA REQUESTS ============
 
-  @Post('data/export')
+  @Post("data/export")
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Request data export' })
+  @ApiOperation({ summary: "Request data export" })
   async requestExport(@CurrentUser() user: CurrentUser) {
-    return this.gdprService.requestDataExport(user.email, 'user');
+    return this.gdprService.requestDataExport(user.email, "user");
   }
 
-  @Post('data/delete')
+  @Post("data/delete")
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Request data deletion' })
+  @ApiOperation({ summary: "Request data deletion" })
   async requestDeletion(@CurrentUser() user: CurrentUser) {
-    return this.gdprService.requestDataDeletion(user.email, 'user');
+    return this.gdprService.requestDataDeletion(user.email, "user");
   }
 
-  @Get('data/request/:token')
+  @Get("data/request/:token")
   @Public()
-  @ApiOperation({ summary: 'Verify data request' })
-  async verifyRequest(@Param('token') token: string) {
+  @ApiOperation({ summary: "Verify data request" })
+  async verifyRequest(@Param("token") token: string) {
     await this.gdprService.verifyDataRequest(token);
-    return { success: true, message: 'Request verified and processing' };
+    return { success: true, message: "Request verified and processing" };
   }
 
   // ============ COOKIE CONSENT (for frontend) ============
 
-  @Post('cookies/consent')
+  @Post("cookies/consent")
   @Public()
-  @ApiOperation({ summary: 'Record cookie consent' })
+  @ApiOperation({ summary: "Record cookie consent" })
   async recordCookieConsent(
-    @Body() body: {
+    @Body()
+    body: {
       email?: string;
       essential: boolean;
       analytics: boolean;

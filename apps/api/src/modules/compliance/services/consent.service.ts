@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/database/prisma.service';
-import { ConsentType, LegalDocType } from '@prisma/client';
+import { Injectable, Logger } from "@nestjs/common";
+import { PrismaService } from "@/database/prisma.service";
+import { ConsentType, LegalDocType } from "@prisma/client";
 
 export interface ConsentRecord {
   type: ConsentType;
@@ -23,7 +23,8 @@ export class ConsentService {
     ipAddress?: string;
     userAgent?: string;
   }): Promise<void> {
-    const { userId, customerId, email, consents, ipAddress, userAgent } = params;
+    const { userId, customerId, email, consents, ipAddress, userAgent } =
+      params;
 
     // Get current policy versions
     const policies = await this.prisma.legalDocument.findMany({
@@ -35,7 +36,7 @@ export class ConsentService {
 
     for (const consent of consents) {
       const policyType = this.mapConsentToPolicy(consent.type);
-      const version = versionMap.get(policyType as LegalDocType) || '1.0.0';
+      const version = versionMap.get(policyType as LegalDocType) || "1.0.0";
 
       if (consent.granted) {
         await this.prisma.consent.create({
@@ -82,7 +83,7 @@ export class ConsentService {
         ].filter((c) => Object.values(c)[0]),
         revokedAt: null,
       },
-      orderBy: { grantedAt: 'desc' },
+      orderBy: { grantedAt: "desc" },
     });
 
     return consents.map((c) => ({
@@ -139,14 +140,14 @@ export class ConsentService {
 
   private mapConsentToPolicy(consentType: ConsentType): string {
     const mapping: Record<ConsentType, string> = {
-      TERMS_OF_SERVICE: 'TERMS_OF_SERVICE',
-      PRIVACY_POLICY: 'PRIVACY_POLICY',
-      MARKETING_EMAIL: 'PRIVACY_POLICY',
-      MARKETING_SMS: 'PRIVACY_POLICY',
-      COOKIE_ESSENTIAL: 'COOKIE_POLICY',
-      COOKIE_ANALYTICS: 'COOKIE_POLICY',
-      COOKIE_MARKETING: 'COOKIE_POLICY',
-      DATA_PROCESSING: 'DATA_PROCESSING_AGREEMENT',
+      TERMS_OF_SERVICE: "TERMS_OF_SERVICE",
+      PRIVACY_POLICY: "PRIVACY_POLICY",
+      MARKETING_EMAIL: "PRIVACY_POLICY",
+      MARKETING_SMS: "PRIVACY_POLICY",
+      COOKIE_ESSENTIAL: "COOKIE_POLICY",
+      COOKIE_ANALYTICS: "COOKIE_POLICY",
+      COOKIE_MARKETING: "COOKIE_POLICY",
+      DATA_PROCESSING: "DATA_PROCESSING_AGREEMENT",
     };
     return mapping[consentType];
   }

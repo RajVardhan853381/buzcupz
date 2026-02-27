@@ -1,12 +1,17 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '@/database/prisma.service';
-import { DataRequestType, DataRequestStatus } from '@prisma/client';
-import { NotificationsService } from '@/modules/notifications/notifications.service';
-import { StorageService } from '@/modules/storage/storage.service';
-import * as crypto from 'crypto';
-import * as archiver from 'archiver';
-import * as fs from 'fs';
-import * as path from 'path';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+} from "@nestjs/common";
+import { PrismaService } from "@/database/prisma.service";
+import { DataRequestType, DataRequestStatus } from "@prisma/client";
+import { NotificationsService } from "@/modules/notifications/notifications.service";
+import { StorageService } from "@/modules/storage/storage.service";
+import * as crypto from "crypto";
+import * as archiver from "archiver";
+import * as fs from "fs";
+import * as path from "path";
 
 @Injectable()
 export class GdprService {
@@ -20,23 +25,26 @@ export class GdprService {
 
   // ============ DATA EXPORT (Right to Portability) ============
 
-  async requestDataExport(email: string, type: 'user' | 'customer'): Promise<{ requestId: string }> {
+  async requestDataExport(
+    email: string,
+    type: "user" | "customer",
+  ): Promise<{ requestId: string }> {
     // Find the user/customer
     let userId: string | null = null;
     let customerId: string | null = null;
 
-    if (type === 'user') {
+    if (type === "user") {
       const user = await this.prisma.user.findFirst({ where: { email } });
-      if (!user) throw new NotFoundException('User not found');
+      if (!user) throw new NotFoundException("User not found");
       userId = user.id;
     } else {
       const customer = await this.prisma.guest.findFirst({ where: { email } });
-      if (!customer) throw new NotFoundException('Customer not found');
+      if (!customer) throw new NotFoundException("Customer not found");
       customerId = customer.id;
     }
 
     // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationToken = crypto.randomBytes(32).toString("hex");
 
     // Create request
     const request = await this.prisma.dataExportRequest.create({
@@ -52,13 +60,13 @@ export class GdprService {
     });
 
     // Send verification email (using templates created)
-    const appUrl = process.env.APP_URL || 'http://localhost:3000';
+    const appUrl = process.env.APP_URL || "http://localhost:3000";
     await this.notifications.sendEmail({
       to: email,
-      subject: 'Verify Your Data Export Request - CAFEelevate',
+      subject: "Verify Your Data Export Request - CAFEelevate",
       html: this.getVerificationEmailHtml({
         verifyUrl: `${appUrl}/data-request/verify?token=${verificationToken}`,
-        expiresIn: '24 hours',
+        expiresIn: "24 hours",
       }),
     });
 
@@ -73,15 +81,15 @@ export class GdprService {
     });
 
     if (!request) {
-      throw new NotFoundException('Request not found');
+      throw new NotFoundException("Request not found");
     }
 
     if (request.verifiedAt) {
-      throw new BadRequestException('Request already verified');
+      throw new BadRequestException("Request already verified");
     }
 
     if (request.expiresAt && request.expiresAt < new Date()) {
-      throw new BadRequestException('Request has expired');
+      throw new BadRequestException("Request has expired");
     }
 
     await this.prisma.dataExportRequest.update({
@@ -118,7 +126,7 @@ export class GdprService {
       } else if (request.customerId) {
         data = await this.collectCustomerData(request.customerId);
       } else {
-        throw new Error('No user or customer ID');
+        throw new Error("No user or customer ID");
       }
 
       // Create ZIP archive
@@ -128,7 +136,7 @@ export class GdprService {
       const downloadUrl = await this.storage.uploadFile(
         `exports/${requestId}/data-export.zip`,
         zipBuffer,
-        'application/zip',
+        "application/zip",
         { expiresIn: 7 * 24 * 60 * 60 }, // 7 days
       );
 
@@ -145,10 +153,10 @@ export class GdprService {
       // Send download link email
       await this.notifications.sendEmail({
         to: request.email,
-        subject: 'Your Data Export is Ready - CAFEelevate',
+        subject: "Your Data Export is Ready - CAFEelevate",
         html: this.getDownloadEmailHtml({
           downloadUrl,
-          expiresIn: '7 days',
+          expiresIn: "7 days",
         }),
       });
 
@@ -206,7 +214,9 @@ export class GdprService {
     };
   }
 
-  private async collectCustomerData(customerId: string): Promise<Record<string, any>> {
+  private async collectCustomerData(
+    customerId: string,
+  ): Promise<Record<string, any>> {
     const customer = await this.prisma.guest.findUnique({
       where: { id: customerId },
     });
@@ -232,17 +242,17 @@ export class GdprService {
   private async createDataArchive(data: Record<string, any>): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
-      const archive = archiver('zip', { zlib: { level: 9 } });
+      const archive = archiver("zip", { zlib: { level: 9 } });
 
-      archive.on('data', (chunk) => chunks.push(chunk));
-      archive.on('end', () => resolve(Buffer.concat(chunks)));
-      archive.on('error', reject);
+      archive.on("data", (chunk) => chunks.push(chunk));
+      archive.on("end", () => resolve(Buffer.concat(chunks)));
+      archive.on("error", reject);
 
       // Add JSON data
-      archive.append(JSON.stringify(data, null, 2), { name: 'data.json' });
+      archive.append(JSON.stringify(data, null, 2), { name: "data.json" });
 
       // Add README
-      archive.append(this.getReadmeContent(), { name: 'README.txt' });
+      archive.append(this.getReadmeContent(), { name: "README.txt" });
 
       archive.finalize();
     });
@@ -272,19 +282,22 @@ Export Date: ${new Date().toISOString()}
 
   // ============ DATA DELETION (Right to Erasure) ============
 
-  async requestDataDeletion(email: string, type: 'user' | 'customer'): Promise<{ requestId: string }> {
-    const verificationToken = crypto.randomBytes(32).toString('hex');
+  async requestDataDeletion(
+    email: string,
+    type: "user" | "customer",
+  ): Promise<{ requestId: string }> {
+    const verificationToken = crypto.randomBytes(32).toString("hex");
 
     let userId: string | null = null;
     let customerId: string | null = null;
 
-    if (type === 'user') {
+    if (type === "user") {
       const user = await this.prisma.user.findFirst({ where: { email } });
-      if (!user) throw new NotFoundException('User not found');
+      if (!user) throw new NotFoundException("User not found");
       userId = user.id;
     } else {
       const customer = await this.prisma.guest.findFirst({ where: { email } });
-      if (!customer) throw new NotFoundException('Customer not found');
+      if (!customer) throw new NotFoundException("Customer not found");
       customerId = customer.id;
     }
 
@@ -300,7 +313,6 @@ Export Date: ${new Date().toISOString()}
       },
     });
 
-    
     // await this.emailService.send({
     //   to: email,
     //   subject: 'Confirm Your Data Deletion Request',
@@ -344,7 +356,6 @@ Export Date: ${new Date().toISOString()}
         },
       });
 
-      
       // await this.emailService.send({
       //   to: request.email,
       //   subject: 'Your Data Has Been Deleted',
@@ -378,10 +389,10 @@ Export Date: ${new Date().toISOString()}
         where: { id: userId },
         data: {
           email: anonymousEmail,
-          firstName: 'Deleted',
-          lastName: 'User',
+          firstName: "Deleted",
+          lastName: "User",
           phone: null,
-          passwordHash: 'DELETED',
+          passwordHash: "DELETED",
           isActive: false,
         },
       }),
@@ -403,8 +414,8 @@ Export Date: ${new Date().toISOString()}
         where: { id: customerId },
         data: {
           email: anonymousEmail,
-          firstName: 'Deleted',
-          lastName: 'Customer',
+          firstName: "Deleted",
+          lastName: "Customer",
           phone: null,
         },
       }),
@@ -413,7 +424,7 @@ Export Date: ${new Date().toISOString()}
       this.prisma.reservation.updateMany({
         where: { guestId: customerId },
         data: {
-          guestName: 'Deleted Customer',
+          guestName: "Deleted Customer",
           guestEmail: anonymousEmail,
           guestPhone: null,
           specialRequests: null,
@@ -425,7 +436,10 @@ Export Date: ${new Date().toISOString()}
   /**
    * Helper method to generate verification email HTML
    */
-  private getVerificationEmailHtml(data: { verifyUrl: string; expiresIn: string }): string {
+  private getVerificationEmailHtml(data: {
+    verifyUrl: string;
+    expiresIn: string;
+  }): string {
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center;">
@@ -452,7 +466,10 @@ Export Date: ${new Date().toISOString()}
   /**
    * Helper method to generate download ready email HTML
    */
-  private getDownloadEmailHtml(data: { downloadUrl: string; expiresIn: string }): string {
+  private getDownloadEmailHtml(data: {
+    downloadUrl: string;
+    expiresIn: string;
+  }): string {
     return `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center;">

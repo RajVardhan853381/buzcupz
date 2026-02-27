@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/database/prisma.service';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "@/database/prisma.service";
 
 @Injectable()
 export class KnowledgeBaseService {
@@ -22,8 +22,8 @@ export class KnowledgeBaseService {
     if (params.isPublic !== undefined) where.isPublic = params.isPublic;
     if (params.search) {
       where.OR = [
-        { title: { contains: params.search, mode: 'insensitive' } },
-        { content: { contains: params.search, mode: 'insensitive' } },
+        { title: { contains: params.search, mode: "insensitive" } },
+        { content: { contains: params.search, mode: "insensitive" } },
         { tags: { hasSome: [params.search.toLowerCase()] } },
       ];
     }
@@ -41,7 +41,7 @@ export class KnowledgeBaseService {
           views: true,
           publishedAt: true,
         },
-        orderBy: { publishedAt: 'desc' },
+        orderBy: { publishedAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -60,7 +60,7 @@ export class KnowledgeBaseService {
     });
 
     if (!article || !article.isPublished) {
-      throw new NotFoundException('Article not found');
+      throw new NotFoundException("Article not found");
     }
 
     if (incrementViews) {
@@ -71,26 +71,27 @@ export class KnowledgeBaseService {
     }
 
     // Get related articles
-    const relatedArticles = article.relatedArticles.length > 0
-      ? await this.prisma.knowledgeBaseArticle.findMany({
-          where: {
-            id: { in: article.relatedArticles },
-            isPublished: true,
-          },
-          select: {
-            slug: true,
-            title: true,
-            excerpt: true,
-          },
-        })
-      : [];
+    const relatedArticles =
+      article.relatedArticles.length > 0
+        ? await this.prisma.knowledgeBaseArticle.findMany({
+            where: {
+              id: { in: article.relatedArticles },
+              isPublished: true,
+            },
+            select: {
+              slug: true,
+              title: true,
+              excerpt: true,
+            },
+          })
+        : [];
 
     return { ...article, relatedArticles };
   }
 
   async getCategories() {
     const categories = await this.prisma.knowledgeBaseArticle.groupBy({
-      by: ['category'],
+      by: ["category"],
       where: { isPublished: true },
       _count: { category: true },
     });
@@ -119,7 +120,7 @@ export class KnowledgeBaseService {
         excerpt: true,
         views: true,
       },
-      orderBy: { views: 'desc' },
+      orderBy: { views: "desc" },
       take: limit,
     });
   }

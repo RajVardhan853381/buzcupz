@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/database/prisma.service';
-import { Request } from 'express';
+import { Injectable, Logger } from "@nestjs/common";
+import { PrismaService } from "@/database/prisma.service";
+import { Request } from "express";
 
 interface AuditLogParams {
   action: string;
@@ -32,8 +32,10 @@ export class AuditService {
           oldValues: params.oldValues,
           newValues: params.newValues,
           metadata: params.metadata,
-          ipAddress: params.request?.ip || (params.request?.headers['x-forwarded-for'] as string),
-          userAgent: params.request?.headers['user-agent'],
+          ipAddress:
+            params.request?.ip ||
+            (params.request?.headers["x-forwarded-for"] as string),
+          userAgent: params.request?.headers["user-agent"],
         },
       });
     } catch (error) {
@@ -68,7 +70,7 @@ export class AuditService {
     const [logs, total] = await Promise.all([
       this.prisma.auditLog.findMany({
         where,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -89,26 +91,26 @@ export class AuditService {
   // Predefined audit actions
   static readonly ACTIONS = {
     // Auth
-    USER_LOGIN: 'user.login',
-    USER_LOGOUT: 'user.logout',
-    USER_LOGIN_FAILED: 'user.login_failed',
-    PASSWORD_CHANGED: 'user.password_changed',
-    PASSWORD_RESET: 'user.password_reset',
+    USER_LOGIN: "user.login",
+    USER_LOGOUT: "user.logout",
+    USER_LOGIN_FAILED: "user.login_failed",
+    PASSWORD_CHANGED: "user.password_changed",
+    PASSWORD_RESET: "user.password_reset",
 
     // Data
-    DATA_EXPORT_REQUESTED: 'data.export_requested',
-    DATA_EXPORT_COMPLETED: 'data.export_completed',
-    DATA_DELETION_REQUESTED: 'data.deletion_requested',
-    DATA_DELETION_COMPLETED: 'data.deletion_completed',
+    DATA_EXPORT_REQUESTED: "data.export_requested",
+    DATA_EXPORT_COMPLETED: "data.export_completed",
+    DATA_DELETION_REQUESTED: "data.deletion_requested",
+    DATA_DELETION_COMPLETED: "data.deletion_completed",
 
     // Orders
-    ORDER_CREATED: 'order.created',
-    ORDER_UPDATED: 'order.updated',
-    ORDER_CANCELLED: 'order.cancelled',
-    ORDER_REFUNDED: 'order.refunded',
+    ORDER_CREATED: "order.created",
+    ORDER_UPDATED: "order.updated",
+    ORDER_CANCELLED: "order.cancelled",
+    ORDER_REFUNDED: "order.refunded",
 
     // Settings
-    SETTINGS_UPDATED: 'settings.updated',
-    SUBSCRIPTION_CHANGED: 'subscription.changed',
+    SETTINGS_UPDATED: "settings.updated",
+    SUBSCRIPTION_CHANGED: "subscription.changed",
   };
 }

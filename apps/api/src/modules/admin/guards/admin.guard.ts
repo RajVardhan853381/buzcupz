@@ -4,12 +4,12 @@ import {
   ExecutionContext,
   UnauthorizedException,
   ForbiddenException,
-} from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '@/database/prisma.service';
-import { AdminRole } from '@prisma/client';
-import { ADMIN_ROLES_KEY } from '../decorators/admin-roles.decorator';
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { JwtService } from "@nestjs/jwt";
+import { PrismaService } from "@/database/prisma.service";
+import { AdminRole } from "@prisma/client";
+import { ADMIN_ROLES_KEY } from "../decorators/admin-roles.decorator";
 
 @Injectable()
 export class AdminGuard implements CanActivate {
@@ -24,7 +24,7 @@ export class AdminGuard implements CanActivate {
     const token = this.extractToken(request);
 
     if (!token) {
-      throw new UnauthorizedException('No token provided');
+      throw new UnauthorizedException("No token provided");
     }
 
     try {
@@ -37,7 +37,7 @@ export class AdminGuard implements CanActivate {
       });
 
       if (!admin || !admin.isActive) {
-        throw new UnauthorizedException('Invalid admin account');
+        throw new UnauthorizedException("Invalid admin account");
       }
 
       // Check role requirements
@@ -47,19 +47,19 @@ export class AdminGuard implements CanActivate {
       );
 
       if (requiredRoles && !requiredRoles.includes(admin.role)) {
-        throw new ForbiddenException('Insufficient permissions');
+        throw new ForbiddenException("Insufficient permissions");
       }
 
       request.admin = admin;
       return true;
     } catch (error) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException("Invalid token");
     }
   }
 
   private extractToken(request: any): string | null {
     const authHeader = request.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    if (authHeader && authHeader.startsWith("Bearer ")) {
       return authHeader.substring(7);
     }
     return null;

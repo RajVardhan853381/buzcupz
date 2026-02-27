@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '@/database/prisma.service';
-import { subDays, startOfDay } from 'date-fns';
+import { Injectable, Logger } from "@nestjs/common";
+import { PrismaService } from "@/database/prisma.service";
+import { subDays, startOfDay } from "date-fns";
 
 export interface DashboardMetrics {
   overview: {
@@ -48,7 +48,7 @@ export class AdminDashboardService {
     ] = await Promise.all([
       // Total restaurants
       this.prisma.restaurant.count(),
-      
+
       // Active restaurants (had activity in last 30 days)
       this.prisma.restaurant.count({
         where: {
@@ -59,34 +59,34 @@ export class AdminDashboardService {
           },
         },
       }),
-      
+
       // Total orders (all time)
       this.prisma.order.count(),
-      
+
       // Total revenue (all time)
       this.prisma.order.aggregate({
         _sum: { totalAmount: true },
-        where: { paymentStatus: 'PAID' },
+        where: { paymentStatus: "PAID" },
       }),
-      
+
       // New restaurants today
       this.prisma.restaurant.count({
         where: { createdAt: { gte: today } },
       }),
-      
+
       // New restaurants this week
       this.prisma.restaurant.count({
         where: { createdAt: { gte: weekAgo } },
       }),
-      
+
       // New restaurants this month
       this.prisma.restaurant.count({
         where: { createdAt: { gte: monthAgo } },
       }),
-      
+
       // Subscription counts by plan
       this.prisma.subscription.groupBy({
-        by: ['plan', 'status'],
+        by: ["plan", "status"],
         _count: true,
       }),
     ]);
@@ -103,7 +103,7 @@ export class AdminDashboardService {
     };
 
     for (const sub of subscriptionCounts) {
-      if (sub.status !== 'CANCELED') {
+      if (sub.status !== "CANCELED") {
         const planKey = sub.plan.toLowerCase() as keyof typeof subscriptions;
         if (planKey in subscriptions) {
           subscriptions[planKey] += sub._count;
@@ -131,7 +131,7 @@ export class AdminDashboardService {
   async getRestaurantsList(params: {
     search?: string;
     plan?: string;
-    status?: 'active' | 'inactive' | 'trial';
+    status?: "active" | "inactive" | "trial";
     page?: number;
     limit?: number;
   }) {
@@ -141,9 +141,9 @@ export class AdminDashboardService {
 
     if (params.search) {
       where.OR = [
-        { name: { contains: params.search, mode: 'insensitive' } },
-        { email: { contains: params.search, mode: 'insensitive' } },
-        { subdomain: { contains: params.search, mode: 'insensitive' } },
+        { name: { contains: params.search, mode: "insensitive" } },
+        { email: { contains: params.search, mode: "insensitive" } },
+        { subdomain: { contains: params.search, mode: "insensitive" } },
       ];
     }
 
@@ -152,13 +152,13 @@ export class AdminDashboardService {
     }
 
     if (params.status) {
-      if (params.status === 'active') {
+      if (params.status === "active") {
         where.isActive = true;
-        where.subscription = { status: 'ACTIVE' };
-      } else if (params.status === 'inactive') {
+        where.subscription = { status: "ACTIVE" };
+      } else if (params.status === "inactive") {
         where.isActive = false;
-      } else if (params.status === 'trial') {
-        where.subscription = { status: 'TRIALING' };
+      } else if (params.status === "trial") {
+        where.subscription = { status: "TRIALING" };
       }
     }
 
@@ -181,7 +181,7 @@ export class AdminDashboardService {
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -233,7 +233,7 @@ export class AdminDashboardService {
     // Get recent orders
     const recentOrders = await this.prisma.order.findMany({
       where: { restaurantId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: 10,
       select: {
         id: true,
@@ -250,7 +250,7 @@ export class AdminDashboardService {
       where: {
         restaurantId,
         createdAt: { gte: thirtyDaysAgo },
-        paymentStatus: 'PAID',
+        paymentStatus: "PAID",
       },
       _sum: { totalAmount: true },
       _count: true,
@@ -266,7 +266,11 @@ export class AdminDashboardService {
     };
   }
 
-  async suspendRestaurant(restaurantId: string, reason: string, adminId: string) {
+  async suspendRestaurant(
+    restaurantId: string,
+    reason: string,
+    adminId: string,
+  ) {
     await this.prisma.$transaction([
       this.prisma.restaurant.update({
         where: { id: restaurantId },
@@ -275,8 +279,8 @@ export class AdminDashboardService {
       this.prisma.adminAuditLog.create({
         data: {
           adminId,
-          action: 'restaurant.suspended',
-          resource: 'Restaurant',
+          action: "restaurant.suspended",
+          resource: "Restaurant",
           resourceId: restaurantId,
           details: { reason },
         },
@@ -293,8 +297,8 @@ export class AdminDashboardService {
       this.prisma.adminAuditLog.create({
         data: {
           adminId,
-          action: 'restaurant.reactivated',
-          resource: 'Restaurant',
+          action: "restaurant.reactivated",
+          resource: "Restaurant",
           resourceId: restaurantId,
         },
       }),
@@ -304,7 +308,7 @@ export class AdminDashboardService {
   private async calculateMRR(): Promise<number> {
     const subscriptions = await this.prisma.subscription.findMany({
       where: {
-        status: 'ACTIVE',
+        status: "ACTIVE",
       },
       select: { plan: true },
     });
